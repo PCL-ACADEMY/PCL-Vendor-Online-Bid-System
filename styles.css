@@ -1,0 +1,157 @@
+/* header */
+header {
+  background-color: black;
+  color: white;
+  width: 100%;
+  height: 10vh;
+  position: fixed;
+  top: 0;
+  left: 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 20px;
+  box-sizing: border-box;
+}
+
+nav {
+  margin-right: 5vh;
+  display: flex;
+  gap: 5vh;
+}
+
+nav button {
+  background: transparent;
+  color: white;
+  font-size: 1.5rem;
+  border: none;
+  cursor: pointer;
+  padding: 10px 15px;
+  transition: background-color 0.3s;
+}
+
+nav button:hover {
+  background-color: #007bff;
+  border-radius: 5px;
+}
+
+/* sidebar */
+.side-bar {
+  background-color: #e4e4e4;
+  width: 250px;
+  height: 87vh;
+  position: fixed;
+  top: 10vh;
+  left: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-top: 20px;
+  overflow: hidden;
+}
+
+.side-bar h1 {
+  margin-bottom: 15px;
+  color: black;
+}
+
+.side-bar ul {
+  list-style: none;
+  padding: 0;
+  width: 100%;
+}
+
+.side-bar li {
+  width: 100%;
+  text-align: center;
+}
+
+.side-bar button {
+  display: block;
+  width: 100%;
+  padding: 15px;
+  border: none;
+  background-color: transparent;
+  color: black;
+  font-size: 18px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.3s, color 0.3s;
+  box-sizing: border-box;
+}
+
+.side-bar button:hover {
+  background-color: #007bff;
+  color: white;
+}
+
+.Products {
+  display: flex;
+  height: 87vh;
+  margin-top: 10vh;
+  flex-grow: 1;
+  padding: 20px;
+  overflow-y: auto;
+  margin-left: 250px;
+}
+
+/* Login Modal  */
+#loginModal {
+  display: none;
+  position: fixed;
+  z-index: 1000;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: 300px;
+  background: white;
+  padding: 20px;
+  box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.3);
+  border-radius: 10px;
+}
+
+.modal-content {
+  position: relative;
+  padding: 20px;
+}
+
+.close {
+  position: absolute;
+  right: 10px;
+  top: 10px;
+  font-size: 20px;
+  cursor: pointer;
+}
+
+.modal-content h2 {
+  text-align: center;
+  margin-bottom: 15px;
+}
+
+.modal-content form {
+  display: flex;
+  flex-direction: column;
+}
+
+.modal-content input {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+.modal-content button {
+  background-color: #007bff;
+  color: white;
+  border: none;
+  padding: 10px;
+  width: 100%;
+  cursor: pointer;
+  border-radius: 5px;
+  transition: background-color 0.3s;
+}
+
+.modal-content button:hover {
+  background-color: #0056b3;
+}

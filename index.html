@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ProcureX</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+   
+    <section>
+        <header>
+            <h1>ProcureX</h1>
+            <nav>
+                <button id="loginbtn">Login</button>
+            </nav>
+        </header>
+    </section>
+    
+    <!-- Login Modal -->
+    <div id="loginModal">
+        <div class="modal-content">
+            <span class="close" onclick="toggleLoginModal()">&times;</span>
+            <h2>Login</h2>
+            <form id="loginForm">
+                <label for="email">Email:</label>
+                <input id="email" required>
+                
+                <label for="password">Password:</label>
+                <input type="password" id="password" required>
+    
+                <button type="submit">Login</button>
+            </form>
+        </div>
+    </section>
+
+    <script type="module" src="firebase-config.js"></script>
+    <script type="module" src="script.js"></script>
+</body>
+</html>
