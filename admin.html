@@ -4,14 +4,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ProcureX</title>
-    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="assets/css/styles.css">
 </head>
 <body>
     <section>
         <header>
             <h1>ProcureX</h1>
             <nav>
-                <button id="logoutBtn">Log Out</button>
+                <button id="logoutBtnAdmin">Log Out</button>
             </nav>
         </header>
     </section>
@@ -27,7 +27,28 @@
         </div>        
     </section>
 
+    <section>
+        <div class="admin-container">
+            <button id="addVendorBtn" class="add-vendor-btn">Add Vendor</button>
+            <!-- Table -->
+            <table>
+                <thead>
+                    <tr>
+                        <th>Username</th>
+                        <th>Company</th>
+                        <th>Date Created</th>
+                        <th>Expiration</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody id="vendorTableBody">
+                    <!-- Data will be added dynamically -->
+                </tbody>
+            </table>
+        </div>
+    </section>
+
     <script type="module" src="firebase-config.js"></script>
-    <script type="module" src="admin.js"></script>
+    <script type="module" src="assets/js/admin.js"></script>
 </body>
 </html>
