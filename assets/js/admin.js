@@ -1,15 +1,136 @@
 import { db } from "./firebase-config.js";
 import { collection, getDocs, deleteDoc, doc } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-firestore.js";
 
-document.getElementById("logoutBtnAdmin").addEventListener("click", function () {
-    window.location.href = "index.html";
-});
+const logoutBtnAdmin = document.getElementById('logoutBtnAdmin');
 
-
+// Fetch ng data sa Firebase
 document.addEventListener("DOMContentLoaded", function () {
     fetchVendorData();
-
+    fetchTruckData()
 });
+
+
+// Logout
+if (logoutBtnAdmin) {
+    logoutBtnAdmin.addEventListener('click', function() {
+        localStorage.removeItem('userType');
+        window.location.href = "index.html";
+    });
+}
+document.addEventListener('DOMContentLoaded', function() {
+    const pathname = window.location.pathname;
+    if (pathname.endsWith('admin.html')) {
+        if (localStorage.getItem('userType') !== 'admin') {
+            window.location.href = 'index.html';
+        }
+    }
+});
+
+// Sidebar Function
+document.addEventListener("DOMContentLoaded", function () {
+    const adminUserContainer = document.querySelector(".admin-user-container");
+    const adminProductContainer = document.querySelector(".admin-product-container");
+    const truckTablesContainer = document.getElementById("truckTables");
+    const sidebarButtons = document.querySelectorAll(".side-bar button");
+
+    let truckDataCache = null;
+
+    sidebarButtons.forEach(button => {
+        button.addEventListener("click", async function () {
+            sidebarButtons.forEach(btn => btn.classList.remove("active"));
+            this.classList.add("active");
+
+            if (this.id === "productsBtn") { 
+                adminUserContainer.style.display = "none";
+                truckTablesContainer.style.display = "block";
+                adminProductContainer.style.display = "none"; 
+
+                if (!truckDataCache) {
+                    truckTablesContainer.innerHTML = "<p>Loading data...</p>";
+                    truckDataCache = await fetchTruckData();
+                    truckTablesContainer.innerHTML = truckDataCache;
+                }
+
+                adminProductContainer.style.display = "block";
+            } else if (this.id === "userBtn") { 
+                adminUserContainer.style.display = "block";
+                adminProductContainer.style.display = "none";
+                truckTablesContainer.style.display = "none";
+            } else {
+                adminUserContainer.style.display = "none";
+                adminProductContainer.style.display = "none";
+                truckTablesContainer.style.display = "none";
+            }
+        });
+    });
+});
+
+
+// Product Function
+async function fetchTruckData() {
+    let content = "";
+    const truckCollections = [
+        { name: "10 Wheeler Trucks", collectionName: "10WheelerTrucks" },
+        { name: "6 Wheeler Trucks", collectionName: "6WheelerTrucks" }
+    ];
+
+    for (const truckType of truckCollections) {
+        const querySnapshot = await getDocs(collection(db, truckType.collectionName));
+
+        if (!querySnapshot.empty) {
+            let table = `<h2>${truckType.name}</h2>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Units</th>
+                            <th>Van Type</th>
+                            <th>Height</th>
+                            <th>Width</th>
+                            <th>Length</th>
+                            <th>Tonnage</th>
+                            <th>Temperature</th>
+                            <th>Ceiling Price</th>
+                            <th>Start Time</th>
+                            <th>Duration (Seconds)</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>`;
+
+            querySnapshot.forEach(doc => {
+                const data = doc.data();
+                const startTime = data.StartTime ? new Date(data.StartTime.seconds * 1000).toLocaleString() : "N/A";
+                const duration = data.Duration ? `${data.Duration} sec` : "N/A";
+
+                table += `<tr>
+                    <td>${data.Units || "N/A"}</td>
+                    <td>${data.VanType || "N/A"}</td>
+                    <td>${data.Height || "N/A"}</td>
+                    <td>${data.Width || "N/A"}</td>
+                    <td>${data.Length || "N/A"}</td>
+                    <td>${data.Tonnage || "N/A"}</td>
+                    <td>${data.Temperature || "N/A"}</td>
+                    <td>${data.CeilingPrice || "N/A"}</td>
+                    <td>${startTime}</td>
+                    <td>${duration}</td>
+                    <td>
+                        <button class="start-btn" data-id="${doc.id}" data-collection="${truckType.collectionName}">Start</button>
+                        <button class="remove-btn" data-id="${doc.id}" data-collection="${truckType.collectionName}">Remove</button>
+                    </td>
+                </tr>`;
+            });
+
+            table += `</tbody></table>`;
+            content += table;
+        }
+    }
+
+    return content || "<p>No available items.</p>";
+}
+
+
+
+// User Function
 
 // Add vendor button event listener
 document.getElementById("addVendorBtn").addEventListener("click", function () {
