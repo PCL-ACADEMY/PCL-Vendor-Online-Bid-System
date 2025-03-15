@@ -37,7 +37,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 if (data.username === email && data.password === password) {
                     alert("Vendor login successful!");
                     localStorage.setItem('userType', 'vendor');
-                    window.location.href = "option.html";
+                    window.location.href = "vendor.html";
                     return;
                 }
             }
@@ -49,7 +49,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 if (data.username === email && data.password === password) {
                     alert("Admin login successful!");
                     localStorage.setItem('userType', 'admin');
-                    window.location.href = "admin.html";
+                    window.location.href = "admin/index.html";
                     return;
                 }
             }
