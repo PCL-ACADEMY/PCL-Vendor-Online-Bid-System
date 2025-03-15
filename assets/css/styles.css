@@ -1,0 +1,374 @@
+
+/* Index */
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Roboto+Condensed:wght@700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500&display=swap');
+
+body {
+margin: 0;
+padding: 0;
+display: flex;
+justify-content: center;
+align-items: center;
+height: 100vh;
+font-family: 'Montserrat', sans-serif;
+background-color: #f5f5f5;
+overflow: hidden;
+}
+
+.container {
+text-align: center;
+position: absolute;
+top: 50%;
+left: 50%;
+transform: translate(-50%, -50%);
+width: 100%;
+}
+
+.logo {
+font-size: 4rem;
+font-weight: bold;
+font-family: 'Orbitron', sans-serif;
+letter-spacing: 2px;
+text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+margin: 0;
+position: relative;
+}
+
+#procure {
+background: linear-gradient(to right, #ff0202, #ff5c5c);
+-webkit-background-clip: text;
+background-clip: text;
+color: transparent;
+opacity: 0;
+}
+
+.x {
+font-size: 6rem;
+font-weight: 900;
+position: relative;
+top: 5px;
+background: linear-gradient(to right, #3333ff, #000066);
+-webkit-background-clip: text;
+background-clip: text;
+color: transparent;
+opacity: 0;
+}
+
+.subtitle {
+font-family: 'Roboto Condensed', sans-serif;
+color: #800000; /* Maroon color */
+font-size: 1.5rem;
+font-weight: 700; /* Bold */
+margin-top: 5px;
+letter-spacing: 1.5px;
+opacity: 0;
+position: relative;
+display: inline-block;
+max-width: 100%;
+text-align: center;
+text-transform: uppercase; /* Makes it all caps for more impact */
+text-shadow: 1px 1px 1px rgba(0,0,0,0.1);
+}
+
+.join-button {
+font-family: 'Poppins', sans-serif;
+font-size: 1rem;
+font-weight: 500;
+margin-top: 12px;
+display: inline-block;
+color: #2c3e50;
+background: rgba(255, 255, 255, 0.8);
+padding: 8px 24px;
+border-radius: 20px;
+transition: all 0.3s ease;
+box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
+border: 1px solid rgba(0, 0, 0, 0.05);
+opacity: 0;
+position: relative;
+cursor: pointer;
+outline: none;
+}
+
+.join-button:hover {
+background: #fff;
+box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+transform: translateY(-2px);
+color: #3333ff;
+}
+
+.join-button:active {
+transform: translateY(0);
+box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+.logo {
+font-size: 3rem;
+}
+
+.x {
+font-size: 4.5rem;
+}
+
+.subtitle {
+font-size: 1.2rem;
+}
+
+.join-button {
+font-size: 0.9rem;
+padding: 6px 20px;
+}
+}
+
+@media (max-width: 480px) {
+.logo {
+font-size: 2.5rem;
+}
+
+.x {
+font-size: 3.5rem;
+}
+
+.subtitle {
+font-size: 1rem;
+}
+
+.join-button {
+font-size: 0.8rem;
+padding: 5px 16px;
+}
+}
+
+/* header */
+header {
+background-color: black;
+color: white;
+width: 100%;
+height: 10vh;
+position: fixed;
+top: 0;
+left: 0;
+display: flex;
+justify-content: space-between;
+align-items: center;
+padding: 0 20px;
+box-sizing: border-box;
+}
+
+nav {
+margin-right: 5vh;
+display: flex;
+gap: 5vh;
+}
+
+nav button {
+background: transparent;
+color: white;
+font-size: 1.5rem;
+border: none;
+cursor: pointer;
+padding: 10px 15px;
+transition: background-color 0.3s;
+}
+
+nav button:hover {
+background-color: #007bff;
+border-radius: 5px;
+}
+
+/* sidebar */
+.side-bar {
+background-color: #e4e4e4;
+width: 250px;
+height: 87vh;
+position: fixed;
+top: 10vh;
+left: 0;
+display: flex;
+flex-direction: column;
+align-items: center;
+padding-top: 20px;
+overflow: hidden;
+}
+
+.side-bar h1 {
+margin-bottom: 15px;
+color: black;
+}
+
+.side-bar ul {
+list-style: none;
+padding: 0;
+width: 100%;
+}
+
+.side-bar li {
+width: 100%;
+text-align: center;
+}
+
+.side-bar button {
+display: block;
+width: 100%;
+padding: 15px;
+border: none;
+background-color: transparent;
+color: black;
+font-size: 18px;
+font-weight: bold;
+cursor: pointer;
+transition: background-color 0.3s, color 0.3s;
+box-sizing: border-box;
+}
+
+.side-bar button:hover {
+background-color: #007bff;
+color: white;
+}
+
+.Products {
+display: flex;
+height: 87vh;
+margin-top: 10vh;
+flex-grow: 1;
+padding: 20px;
+overflow-y: auto;
+margin-left: 250px;
+}
+
+body {
+  font-family: Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  background: linear-gradient(280deg, #ec727236, #ffffff73);
+}
+
+
+
+button#loginbtn:hover {
+  background-color: #b30c0013;
+}
+
+#loginModal {
+  display: none;
+  position: fixed;
+  z-index: 1000;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: 90%;
+  max-width: 450px;
+  background: rgba(255, 255, 255, 0.2);
+  box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.3);
+  border-radius: 10px;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.modal-content {
+  position: relative;
+  padding: 30px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.close {
+  position: absolute;
+  right: 10px;
+  top: 10px;
+  font-size: 24px;
+  cursor: pointer;
+  color: rgb(0, 0, 0);
+  transition: color 0.3s;
+}
+
+.close:hover {
+  color: #ff4d4d;
+}
+
+.modal-content h2 {
+  text-align: center;
+  margin-bottom: 20px;
+  color: rgb(7, 7, 7);
+  font-size: 1.8rem;
+}
+
+.modal-content form {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+.modal-content label {
+  color: rgb(0, 0, 0);
+  font-size: 14px;
+  margin-bottom: 5px;
+}
+
+.modal-content input {
+  width: 100%;
+  padding: 12px;
+  margin-bottom: 15px;
+  border: 1px solid rgba(66, 66, 66, 0.5);
+  border-radius: 5px;
+  background: rgba(255, 255, 255, 0.1);
+  color: rgb(2, 2, 2);
+  font-size: 14px;
+  box-sizing: border-box;
+}
+
+.modal-content input::placeholder {
+  color: rgba(2, 2, 2, 0.7);
+}
+
+.modal-content button {
+  background-color: #007bff;
+  color: rgb(255, 255, 255);
+  border: none;
+  padding: 12px;
+  width: 100%;
+  cursor: pointer;
+  border-radius: 5px;
+  font-size: 16px;
+  font-weight: bold;
+  transition: background-color 0.3s, transform 0.2s;
+}
+
+.modal-content button:hover {
+  background-color: #0056b3;
+  transform: translateY(-2px);
+}
+
+.modal-content button:active {
+  transform: translateY(0);
+}
+
+@media (max-width: 480px) {
+  #loginModal {
+      width: 95%;
+      max-width: 300px;
+  }
+  
+  .modal-content h2 {
+      font-size: 1.5rem;
+      margin-bottom: 15px;
+  }
+  
+  .modal-content input {
+      padding: 10px;
+      margin-bottom: 12px;
+  }
+  
+  .modal-content button {
+      padding: 10px;
+  }
+}
