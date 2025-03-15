@@ -37,7 +37,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 if (data.username === email && data.password === password) {
                     alert("Vendor login successful!");
                     localStorage.setItem('userType', 'vendor');
-                    window.location.href = "vendor.html";
+                    window.location.href = "option.html";
                     return;
                 }
             }
