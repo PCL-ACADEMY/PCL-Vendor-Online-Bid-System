@@ -19,16 +19,24 @@
     <section>
         <div class="side-bar">
             <ul>
-                <li><button>Dashboard</button></li>
-                <li><button>Products</button></li>
-                <li><button>Bids</button></li>
-                <li><button>Users</button></li>
+                <li><button id="dashboardBtn">Dashboard</button></li>
+                <li><button id="productsBtn">Products</button></li>
+                <li><button id="bidsBtn">Bids</button></li>
+                <li><button id="userBtn">Users</button></li>
             </ul>
         </div>        
     </section>
 
+    <!-- Product Section -->
     <section>
-        <div class="admin-container">
+        <div class="admin-product-container" style="display: none;">
+            <button class="add-product-btn">Add Product</button>
+            <div id="truckTables" style="display: none;"></div>    
+        </div>
+    </section>    
+
+    <section>
+        <div class="admin-user-container">
             <button id="addVendorBtn" class="add-vendor-btn">Add Vendor</button>
             <!-- Table -->
             <table>
@@ -48,7 +56,7 @@
         </div>
     </section>
 
-    <script type="module" src="firebase-config.js"></script>
+    <script type="module" src="/assets/js/firebase-config.js"></script>
     <script type="module" src="assets/js/admin.js"></script>
 </body>
 </html>
