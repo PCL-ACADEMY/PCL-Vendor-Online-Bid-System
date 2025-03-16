@@ -1,3 +1,4 @@
+// script.js
 import { db } from "./firebase-config.js";
 import { collection, getDocs } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-firestore.js";
 const logoutBtn = document.getElementById('logoutBtn');
@@ -35,13 +36,14 @@ document.addEventListener("DOMContentLoaded", function () {
             for (let doc of vendorSnapshot.docs) {
                 let data = doc.data();
                 if (data.username === email && data.password === password) {
-                    alert("Vendor login successful!");
-                    localStorage.setItem('userType', 'vendor');
-                    window.location.href = "option.html";
+                    alert("vendor login successful!");
+                    localStorage.setItem('vendorType', 'vendor');
+                    localStorage.setItem('vendorEmail', email);
+                    localStorage.setItem('vendorDocId', doc.id);
+                    window.location.href = "vendor/option.html";
                     return;
                 }
             }
-
             const adminRef = collection(db, "AdminAccount");
             const adminSnapshot = await getDocs(adminRef);
             for (let doc of adminSnapshot.docs) {
@@ -49,7 +51,9 @@ document.addEventListener("DOMContentLoaded", function () {
                 if (data.username === email && data.password === password) {
                     alert("Admin login successful!");
                     localStorage.setItem('userType', 'admin');
-                    window.location.href = "admin.html";
+                    localStorage.setItem('adminEmail', email);
+                    localStorage.setItem('adminDocId', doc.id);
+                    window.location.href = "admin/adminPage.html";
                     return;
                 }
             }
@@ -65,7 +69,6 @@ document.addEventListener("DOMContentLoaded", function () {
     loginForm.addEventListener("submit", validateLogin);
 });
 
-// Logout functionality for both Vendor and Admin
 if (logoutBtn) {
     logoutBtn.addEventListener('click', function() {
         localStorage.removeItem('userType');
