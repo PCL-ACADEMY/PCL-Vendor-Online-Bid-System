@@ -23,10 +23,8 @@ document.addEventListener("DOMContentLoaded", () => {
             return;
         }
         
-        // Store selected truck types in sessionStorage
         sessionStorage.setItem("selectedTrucks", JSON.stringify(selectedTrucks));
 
-        // Redirect to vendor.html
-        window.location.href = "vendor.html";
+        window.location.href = "../vendor/vendorPage.html";
     });
 });
