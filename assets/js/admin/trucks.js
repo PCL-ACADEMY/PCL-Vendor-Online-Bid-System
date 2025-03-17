@@ -116,8 +116,6 @@ async function fetchTruckData() {
                                     <th scope="col">Tonnage</th>
                                     <th scope="col">Temperature</th>
                                     <th scope="col">Ceiling Price</th>
-                                    <th scope="col">Start Time</th>
-                                    <th scope="col">Duration (Seconds)</th>
                                     <th scope="col">Action</th>
                                 </tr>
                             </thead>
@@ -138,10 +136,7 @@ async function fetchTruckData() {
                     <td>${data.Tonnage || "N/A"}</td>
                     <td>${data.Temperature || "N/A"}</td>
                     <td>${data.CeilingPrice || "N/A"}</td>
-                    <td>${startTime}</td>
-                    <td>${duration}</td>
                     <td>
-                        <button class="btn btn-success start-btn" data-id="${doc.id}" data-collection="${truckType.collectionName}">Start</button>
                         <button class="btn btn-primary update-btn" data-id="${doc.id}" data-collection="${truckType.collectionName}" data-bs-toggle="modal" data-bs-target="#updateModal">Update</button>
                     </td>
                 </tr>`;
