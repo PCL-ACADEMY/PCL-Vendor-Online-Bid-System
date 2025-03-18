@@ -12,7 +12,6 @@
   <!-- Favicons -->
   <link href="../assets/img/pcl.png" rel="icon">
   <link href="../assetsAd/img/apple-touch-icon.png" rel="apple-touch-icon">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 
   <!-- Google Fonts -->
   <link href="https://fonts.gstatic.com" rel="preconnect">
@@ -121,7 +120,7 @@
   <main id="main" class="main">
 
     <div class="pagetitle">
-      <h1>Events</h1>
+      <h1>[EventName] Records</h1>
       <nav>
         <ol class="breadcrumb">
           <li class="breadcrumb-item"><a href="index.html">Home</a></li>
@@ -131,41 +130,40 @@
     </div><!-- End Page Title -->
 
     <section class="section dashboard">
+        <input type="text" id="filterInput" class="filter-input" placeholder="Filter by any column...">
 
     <div class="table-container">
-        <div style="text-align: right; padding-top: 15px;">
-            <input type="text"  id="filterInput"  placeholder="Filter by any column..." style="width: 300px; padding: 5px; border-radius: 5px; border: 1px solid #aaa;">
-            <button style="padding: 5px 20px; border-radius: 5px; border: 1px solid #aaa; background-color: #800000; color: white; cursor: pointer;"> + Add Product</button>
-        </div>
         <table id="myTable">
             <thead>
-                <tr>
-                    <th style="width: 25%;">Description</th>
-                    <th style="width: 5%; text-align: center;">Quantity Req.</th>
-                    <th style="width:3%; text-align: center;">Action</th>
-                </tr>
+              <tr>
+                <th style="width: 20%; font-size: 13px;">Description</th>
+                <th style="width: 4%; text-align: center; font-size: 13px;">Quantity Req.</th>
+                <th style="width: 8%; text-align: center; font-size: 13px;">Quantity Offered</th>
+                <th style="width: 4%; text-align: center; font-size: 13px;">Bid Amount</th>
+                <th style="width: 15%; text-align: center; font-size: 13px;">[Company Name]</th>
+                <th style="width: 1%; text-align: center; font-size: 13px;">Rank</th>
+              </tr>
             </thead>
             <tbody>
-                <tr>
-                    <td>WING, N/A, N/A, 40ft, 30.0T, DRY,Hold</td>
-                    <td style="text-align: center;">20</td>
-                    <td style="text-align: center;">
-                        <button style="padding: 5px 20px; border-radius: 5px; border: 1px solid #010101; background-color: #070085; color: white; cursor: pointer;">
-                            <i class="fas fa-edit"></i> Update
-                        </button>
-                    </td>
-                </tr>
-                <tr>
-                    <td>WING, 2800mm,  2500mm,  32ft, 13.0T, DRY,  Hold</td>
-                    <td style="text-align: center;">58</td>
-                    <td style="text-align: center;">
-                        <button style="padding: 5px 20px; border-radius: 5px; border: 1px solid #010101; background-color: #070085; color: white; cursor: pointer;">
-                            <i class="fas fa-edit"></i> Update
-                        </button>
-                    </td>
-                </tr>
+              <tr>
+                <td style="font-size: 13px;">WING, N/A, N/A, 40ft, 30.0T, DRY,Hold</td>
+                <td style="text-align: center; font-size: 13px;">20</td>
+                <td style="text-align: center; font-size: 13px;">58</td>
+                <td style="text-align: center; font-size: 13px;">₱ 777</td>
+                <td style="text-align: center; font-size: 13px;">[Company Name]</td>
+                <td style="text-align: center; font-size: 13px;">1</td>
+              </tr>
+              <tr>
+                <td style="font-size: 13px;">WING, 2800mm, 2500mm, 32ft, 13.0T, DRY, Hold</td>
+                <td style="text-align: center; font-size: 13px;">58</td>
+                <td style="text-align: center; font-size: 13px;">20</td>
+                <td style="text-align: center; font-size: 13px;">₱ 777</td>
+                <td style="text-align: center; font-size: 13px;">[Company Name]</td>
+                <td style="text-align: center; font-size: 13px;">1</td>
+              </tr>
             </tbody>
-        </table>
+          </table>
+          
     </div>
 
     <script>
