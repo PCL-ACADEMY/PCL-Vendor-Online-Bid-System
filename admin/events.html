@@ -72,30 +72,30 @@
       </li>
 
       <li class="nav-item">
-        <a class="nav-link collapsed" data-bs-target="#components-nav" data-bs-toggle="collapse" href="#">
-          <i class="bi bi-menu-button-wide"></i><span>Event Manage</span><i class="bi bi-chevron-down ms-auto"></i>
+        <a class="nav-link" data-bs-target="#components-nav" data-bs-toggle="collapse" href="#">
+            <i class="bi bi-menu-button-wide"></i><span>Event Manage</span><i class="bi bi-chevron-down ms-auto"></i>
         </a>
-        <ul id="components-nav" class="nav-content collapse " data-bs-parent="#sidebar-nav">
-          <li>
-            <a href="events.html"> <!-- ======= Nakadynamic .html?#1 ======= -->
-              <i class="bi bi-circle"></i><span>[Event Name]</span>
-            </a>
-          </li>
-        </ul>
-      </li>
-
-      <li class="nav-item">
-        <a class="nav-link collapsed" data-bs-target="#forms-nav" data-bs-toggle="collapse" href="#">
-          <i class="bi bi-journal-text"></i><span>Bidding Records</span><i class="bi bi-chevron-down ms-auto"></i>
-        </a>
-        <ul id="forms-nav" class="nav-content collapse " data-bs-parent="#sidebar-nav">
+        <ul id="components-nav" class="nav-content collapse" data-bs-parent="#sidebar-nav">
             <li>
-                <a href="eventrecord.html"> <!-- ======= Nakadynamic .html?#1 ======= -->
-                    <i class="bi bi-circle"></i><span>[Event Name]</span>
-                </a>
+                <ul id="event-list">
+                    <!-- Events will be dynamically inserted here -->
+                </ul>
             </li>
         </ul>
-      </li>
+    </li>
+
+    <li class="nav-item">
+      <a class="nav-link collapsed" data-bs-target="#forms-nav" data-bs-toggle="collapse" href="#">
+          <i class="bi bi-journal-text"></i><span>Bidding Records</span><i class="bi bi-chevron-down ms-auto"></i>
+      </a>
+      <ul id="forms-nav" class="nav-content collapse " data-bs-parent="#sidebar-nav">
+          <li>
+              <ul id="bidding-records-list">
+                  <!-- Events will be dynamically inserted here -->
+              </ul>
+          </li>
+      </ul>
+  </li>
 
 
       
@@ -224,6 +224,7 @@
   <!-- Template Main JS File -->
   <script src="../assetsAd/js/main.js"></script>
   <script type="module" src="../assets/js/admin/account.js"></script>
+  <script type="module" src="../event.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
 </body>

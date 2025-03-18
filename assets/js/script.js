@@ -1,6 +1,6 @@
 // script.js
 import { db } from "./firebase-config.js";
-import { collection, getDocs } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-firestore.js";
+import { collection, getDocs, query, where } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-firestore.js";
 const logoutBtn = document.getElementById('logoutBtn');
 const logoutBtnAdmin = document.getElementById('logoutBtnAdmin');
 
@@ -24,54 +24,56 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 
     // Function to validate login
-async function validateLogin(event) {
-    event.preventDefault();
-
-    let email = document.getElementById("email").value;
-    let password = document.getElementById("password").value;
-
-    try {
-        // Check Vendor Account
-        const vendorRef = collection(db, "VendorAccount");
-        const vendorSnapshot = await getDocs(vendorRef);
-        for (let doc of vendorSnapshot.docs) {
-            let data = doc.data();
-            if (data.username === email && data.password === password) {
-                if (data.status === "Deactivated") {
+    async function validateLogin(event) {
+        event.preventDefault();
+    
+        let email = document.getElementById("email").value;
+        let password = document.getElementById("password").value;
+    
+        try {
+            // Check Company Account (Vendor)
+            const companyQuery = query(collection(db, "CompanyAccounts"), where("Username", "==", email), where("Password", "==", password));
+            const companySnapshot = await getDocs(companyQuery);
+    
+            if (!companySnapshot.empty) {
+                let companyDoc = companySnapshot.docs[0];
+                let data = companyDoc.data();
+    
+                if (data.Status === "Inactive") {
                     alert("Your account has been deactivated. Please contact support.");
                     return;
                 }
+    
                 alert("Vendor login successful!");
-                localStorage.setItem('vendorType', 'vendor');
-                localStorage.setItem('vendorEmail', email);
-                localStorage.setItem('vendorDocId', doc.id);
+                localStorage.setItem('userType', 'vendor');
+                localStorage.setItem('userEmail', email);
+                localStorage.setItem('userDocId', companyDoc.id);
                 window.location.href = "vendor/option.html";
                 return;
             }
-        }
-
-        // Check Admin Account
-        const adminRef = collection(db, "AdminAccount");
-        const adminSnapshot = await getDocs(adminRef);
-        for (let doc of adminSnapshot.docs) {
-            let data = doc.data();
-            if (data.username === email && data.password === password) {
+    
+            // Check Admin Account
+            const adminQuery = query(collection(db, "AdminAccounts"), where("Username", "==", email), where("Password", "==", password));
+            const adminSnapshot = await getDocs(adminQuery);
+    
+            if (!adminSnapshot.empty) {
+                let adminDoc = adminSnapshot.docs[0];
+    
                 alert("Admin login successful!");
                 localStorage.setItem('userType', 'admin');
-                localStorage.setItem('adminEmail', email);
-                localStorage.setItem('adminDocId', doc.id);
+                localStorage.setItem('userEmail', email);
+                localStorage.setItem('userDocId', adminDoc.id);
                 window.location.href = "admin/adminPage.html";
                 return;
             }
+    
+            alert("Invalid username or password!");
+    
+        } catch (error) {
+            console.error("Error validating login:", error);
+            alert("Error logging in. Please try again.");
         }
-
-        alert("Invalid username or password!");
-
-    } catch (error) {
-        console.error("Error validating login:", error);
-        alert("Error logging in. Please try again.");
     }
-}
 
 loginForm.addEventListener("submit", validateLogin);
 });

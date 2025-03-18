@@ -15,8 +15,8 @@ async function displayAdminName() {
   }
   
   try {
-    const adminRef = collection(db, "AdminAccount");
-    const q = query(adminRef, where("username", "==", adminEmail));
+    const adminRef = collection(db, "AdminAccounts");
+    const q = query(adminRef, where("Username", "==", adminEmail));
     const querySnapshot = await getDocs(q);
     
     if (!querySnapshot.empty) {
@@ -118,10 +118,10 @@ function createAdminTable() {
 
 async function populateAdminTable() {
     try {
-        const adminRef = collection(db, "AdminAccount");
+        const adminRef = collection(db, "AdminAccounts"); // Ensure correct collection name
         const adminSnapshot = await getDocs(adminRef);
 
-        adminData = [];
+        let adminData = []; // Properly declare the array
 
         if (adminSnapshot.empty) {
             console.log("No admin accounts found");
@@ -132,10 +132,10 @@ async function populateAdminTable() {
         adminSnapshot.forEach((doc) => {
             const data = doc.data();
             adminData.push({
-                id: doc.id,
-                name: data.name || "N/A",
-                username: data.username || "N/A",
-                password: data.password || ""
+                id: doc.id, 
+                name: data.Name || "N/A", 
+                username: data.Username || "N/A", 
+                password: data.Password || "" 
             });
         });
 
@@ -146,6 +146,7 @@ async function populateAdminTable() {
         renderTable([]);
     }
 }
+
 
 function renderTable(data) {
     const tableBody = document.querySelector("#admin-table-body");
@@ -241,7 +242,7 @@ window.saveAdminChanges = async function() {
             updateData.password = password;
         }
 
-        const adminRef = doc(db, "AdminAccount", currentAdminId);
+        const adminRef = doc(db, "AdminAccounts", currentAdminId);
         await updateDoc(adminRef, updateData);
 
         console.log("Admin details updated successfully");
@@ -294,7 +295,7 @@ window.deleteAdmin = async function() {
         }
         
         // Delete the admin document
-        await deleteDoc(doc(db, "AdminAccount", currentAdminId));
+        await deleteDoc(doc(db, "AdminAccounts", currentAdminId));
         console.log("Admin account deleted successfully");
         
         // Update local data
@@ -316,7 +317,7 @@ window.deleteAdmin = async function() {
 // Function to get the next admin number
 async function getNextAdminNumber() {
     try {
-        const adminRef = collection(db, "AdminAccount");
+        const adminRef = collection(db, "AdminAccounts");
         const adminSnapshot = await getDocs(adminRef);
         
         if (adminSnapshot.empty) {
@@ -376,7 +377,7 @@ window.addNewAdmin = async function() {
         }
 
         // Check if username (email) already exists
-        const adminRef = collection(db, "AdminAccount");
+        const adminRef = collection(db, "AdminAccounts");
         const q = query(adminRef, where("username", "==", username));
         const querySnapshot = await getDocs(q);
         
@@ -397,7 +398,7 @@ window.addNewAdmin = async function() {
         };
 
         // Use setDoc instead of addDoc to specify the document ID
-        await setDoc(doc(db, "AdminAccount", docId), newAdmin);
+        await setDoc(doc(db, "AdminAccounts", docId), newAdmin);
         console.log("New admin account created with ID:", docId);
 
         // Update the local data and refresh the table
