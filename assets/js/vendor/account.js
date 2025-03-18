@@ -145,7 +145,7 @@ function createVendorTable() {
 
 async function populateVendorTable() {
     try {
-        const vendorRef = collection(db, "VendorAccount");
+        const vendorRef = collection(db, "CompanyAccounts");
         const vendorSnapshot = await getDocs(vendorRef);
         
         vendorData = [];
@@ -161,11 +161,11 @@ async function populateVendorTable() {
             vendorData.push({
                 id: doc.id,
                 company: data.Company || "N/A",
-                username: data.username || "N/A",
+                username: data.Username || "N/A",
                 dateCreated: data.DateCreated || "N/A",
                 expiration: data.Expiration || "N/A",
-                status: data.status || "N/A",
-                password: data.password || "N/A"
+                status: data.Status || "N/A",
+                password: data.Password || "N/A"
             });
         });
         
@@ -232,7 +232,7 @@ function filterTable(searchText) {
 
 async function getNextCompanyNumber() {
     try {
-        const vendorRef = collection(db, "VendorAccount");
+        const vendorRef = collection(db, "CompanyAccounts");
         const vendorSnapshot = await getDocs(vendorRef);
         
         if (vendorSnapshot.empty) {
@@ -315,7 +315,7 @@ window.saveVendorChanges = async function() {
             updateData.password = password;
         }
         
-        const vendorRef = doc(db, "VendorAccount", currentVendorId);
+        const vendorRef = doc(db, "CompanyAccounts", currentVendorId);
         await updateDoc(vendorRef, updateData);
         
         console.log("Vendor details updated successfully");
@@ -323,7 +323,7 @@ window.saveVendorChanges = async function() {
         const vendorIndex = vendorData.findIndex(v => v.id === currentVendorId);
         if (vendorIndex !== -1) {
             vendorData[vendorIndex].company = company;
-            vendorData[vendorIndex].username = username;
+            vendorData[vendorIndex].username = Username;
             vendorData[vendorIndex].status = status;
             renderTable(vendorData);
         }
@@ -353,7 +353,7 @@ window.deleteVendor = async function() {
     if (!currentVendorId) return;
     
     try {
-        await deleteDoc(doc(db, "VendorAccount", currentVendorId));
+        await deleteDoc(doc(db, "CompanyAccounts", currentVendorId));
         console.log("Vendor account deleted successfully");
         
         vendorData = vendorData.filter(vendor => vendor.id !== currentVendorId);
@@ -406,8 +406,8 @@ window.addNewVendor = async function() {
             return;
         }
         
-        const vendorRef = collection(db, "VendorAccount");
-        const q = query(vendorRef, where("username", "==", username));
+        const vendorRef = collection(db, "CompanyAccounts");
+        const q = query(vendorRef, where("username", "==", Username));
         const querySnapshot = await getDocs(q);
         
         if (!querySnapshot.empty) {
@@ -434,7 +434,7 @@ window.addNewVendor = async function() {
             Expiration: expirationDateStr
         };
         
-        await setDoc(doc(db, "VendorAccount", docId), newVendor);
+        await setDoc(doc(db, "CompanyAccounts", docId), newVendor);
         console.log("New vendor account created with ID:", docId);
         
         vendorData.push({
