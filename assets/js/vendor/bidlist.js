@@ -1,6 +1,6 @@
 import { db } from "../firebase-config.js";
 import { 
-    collection, 
+    collection,  
     getDocs, 
     getDoc, 
     updateDoc, 
@@ -16,7 +16,6 @@ document.addEventListener("DOMContentLoaded", async function () {
         truckTablesContainer.innerHTML = "<p>Loading data...</p>";
         const truckData = await fetchTruckData();
         truckTablesContainer.innerHTML = truckData;
-        // Add event listeners after content is loaded
         attachEventListeners();
     } else {
         console.error("Error: truckTablesContainer not found.");
@@ -24,33 +23,25 @@ document.addEventListener("DOMContentLoaded", async function () {
 });
 
 function attachEventListeners() {
-    // Update form submission
     const updateForm = document.getElementById("updateTruckForm");
     if (updateForm) {
         updateForm.addEventListener("submit", handleUpdateFormSubmit);
     }
     
-    // Remove truck button
     const removeBtn = document.getElementById("removeTruckBtn");
     if (removeBtn) {
         removeBtn.addEventListener("click", handleRemoveTruck);
     }
-    
-    // Update buttons in the table
     const updateBtns = document.querySelectorAll(".update-btn");
     updateBtns.forEach(btn => {
         btn.addEventListener("click", handleUpdateButtonClick);
     });
-    
-    // Start buttons in the table
     const startBtns = document.querySelectorAll(".start-btn");
     startBtns.forEach(btn => {
         btn.addEventListener("click", handleStartButtonClick);
     });
 }
 
-// Add this function to count trucks and display the total
-// Add this function to count trucks and display only the total
 async function countAndDisplayTrucks() {
     let totalTrucks = 0;
     const truckCollections = [
@@ -63,14 +54,12 @@ async function countAndDisplayTrucks() {
         totalTrucks += querySnapshot.size;
     }
 
-    // Display only the total count number
     const countElement = document.getElementById("count-trucks");
     if (countElement) {
         countElement.textContent = totalTrucks;
     }
 }
 
-// Modify your DOMContentLoaded event to include the count function
 document.addEventListener("DOMContentLoaded", async function () {
     const truckTablesContainer = document.getElementById("truckTables");
 
@@ -78,10 +67,8 @@ document.addEventListener("DOMContentLoaded", async function () {
         truckTablesContainer.innerHTML = "<p>Loading data...</p>";
         const truckData = await fetchTruckData();
         truckTablesContainer.innerHTML = truckData;
-        // Add event listeners after content is loaded
         attachEventListeners();
         
-        // Count and display truck totals
         await countAndDisplayTrucks();
     } else {
         console.error("Error: truckTablesContainer not found.");
@@ -95,86 +82,87 @@ async function fetchTruckData() {
         { name: "6 Wheeler Trucks", collectionName: "6WheelerTrucks" }
     ];
 
+    // Timer Box HTML (Fixed to top-right corner)
+    content += `
+        <div id="timerBox" style="position: fixed; top: 10px; right: 10px; background: #fff; padding: 10px 20px; border: 1px solid #ccc; border-radius: 5px; box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); font-size: 16px; z-index: 9999;">
+            Time: <span id="timer"></span>
+        </div>
+    `;
+
+    content += `
+        <div class="col-12">
+       <div style="padding: 10px; font-size: 1.2em; font-weight: bold; background-color: #f0f8ff; border-radius: 5px;">
+        My Bid Rank: (#)
+    </div>
+            <div class="card recent-sales overflow-auto">
+                <div class="card-body mt-3">
+                    <table class="table datatable" style="width: 100%;">
+                        <thead>
+                            <tr>
+                                <th scope="col" style="padding: 1 15px; width: 13%;">Truck Type</th>
+                                <th scope="col" style="padding: 1 15px; width: 35%;">Description</th>
+                                <th scope="col" style="padding: 1 15px; width: 7%; text-align: center;">Qty Req</th>
+                                <th scope="col" style="padding: 1 15px; width: 10%; text-align: center;">Qty Offer</th>
+                                <th scope="col" style="padding: 1 15px; width: 10%; text-align: center;">Bid Amount</th>
+                                <th scope="col" style="padding: 1 15px; width: 7%; text-align: center;">Rank</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+    `;
+
+    // Loop through the truck collections and fetch the data
     for (const truckType of truckCollections) {
         const querySnapshot = await getDocs(collection(db, truckType.collectionName));
         const rowCount = querySnapshot.size;
 
         if (!querySnapshot.empty) {
-            content += `<h3>${truckType.name} (${rowCount})</h3>`;
-
+            // Add a row for the truck type
             querySnapshot.forEach(doc => {
                 const data = doc.data();
-                const startTime = data.StartTime 
-                    ? new Date(data.StartTime.seconds * 1000).toLocaleString() 
-                    : "N/A";  
-                const duration = data.Duration ? `${data.Duration} sec` : "N/A";
 
-                content += `
-                    <div class="col-12">
-                <div class="card recent-sales overflow-auto">
-                    <div class="card-body">
-                        <h5 class="card-title">
-                            <table border="0" cellspacing="0">
-                                <thead>
-                                    <tr>
-                                        <th scope="col" style="padding: 0 15px;">Units</th>
-                                        <th scope="col" style="padding: 0 15px;">Van Type</th>
-                                        <th scope="col" style="padding: 0 15px;">Height</th>
-                                        <th scope="col" style="padding: 0 15px;">Width</th>
-                                        <th scope="col" style="padding: 0 15px;">Length</th>
-                                        <th scope="col" style="padding: 0 15px;">Tonnage</th>
-                                        <th scope="col" style="padding: 0 15px;">Temperature</th>
-                                        <th scope="col" style="padding: 0 15px;">Ceiling Price</th>
+                content += `    
+                        <tr>
+                            <td style="padding: 10px 15px; text-align: left;">${truckType.name}</td>
+                            <td style="padding: 10px 15px; text-align: left;">
+                                ${data.Units || "N/A"}, ${data.VanType || "N/A"}, ${data.Height || "N/A"}, 
+                                ${data.Width || "N/A"}, ${data.Length || "N/A"}, ${data.Tonnage || "N/A"}, 
+                                ${data.Temperature || "N/A"}, ${data.CeilingPrice || "N/A"}
+                            </td>
+                            <td style="padding: 10px 15px; text-align: center;">22</td>
+                            <td style="padding: 10px 15px; text-align: center;">
+                                <input type="text" id="qtyOffer" style="width: 50%; padding: px; border-radius: 5px; border: 1px solid #ccc;">
+                            </td>
+                            <td style="padding: 10px 15px; text-align: center;">
+                                <input type="checkbox" id="bidAmountCheckbox" style="margin-right: 5px;">ㅤ
+                                <span>₱ 777</span>
+                            </td>
+                            <td style="padding: 10px 15px; text-align: center;">9</td>
 
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr>
-                                        <td style="padding: 0 15px;">${data.Units || "N/A"}</td>
-                                        <td style="padding: 0 15px;">${data.VanType || "N/A"}</td>
-                                        <td style="padding: 0 15px;">${data.Height || "N/A"}</td>
-                                        <td style="padding: 0 15px;">${data.Width || "N/A"}</td>
-                                        <td style="padding: 0 15px;">${data.Length || "N/A"}</td>
-                                        <td style="padding: 0 15px;">${data.Tonnage || "N/A"}</td>
-                                        <td style="padding: 0 15px;">${data.Temperature || "N/A"}</td>
-                                        <td style="padding: 0 15px;">${data.CeilingPrice || "N/A"}</td>
-                                    </tr>
-                                </tbody>
-                            </table><br>
-                            <table border="0" cellspacing="0">
-                                <thead>
-                                    <tr>
-                                        <td style="padding: 10px 15px 0 15px; font-size: 24px; color: black; font-weight: bold;">Timer: 00:00  NOTE:Kapag naubos ang oras nakaauto hold na agad at waiting nalang sa ibang may oras pa</td>
-                                    </tr>
-                                </thead>
-                            </table>
-                        </h5>
-                        <hr>
-                        <table class="table datatable">
-                            <thead>
-                                <tr>
-                                    <th>Rank</th>
-                                    <th>Bid Amount</th>
-                                    <th>Company Name</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                            <tr>
-                                <td>1</td>
-                                <td>[Insert Bid Amount] [update] "kapag maguupdate sya puro pababa lang ng amount ang pwedeng ilagay"</td>
-                                <td>Company name</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                    </div>
-                </div>
-            </div>
-                    <br>`;
+                        </tr>
+                `;
             });
-        } else {
-            content += `<h3>${truckType.name} (0)</h3><p>No trucks available in this category.</p>`;
         }
     }
+
+    content += `
+                        </tbody>
+                    </table>
+                   <div style="display: flex; justify-content: flex-end; align-items: center;">
+                        <input type="text" id="decrease" style="width: 10%; padding: 5px; margin-right: 1%; border-radius: 5px; border: 1px solid #ccc;">
+                        <button type="submit" class="btn btn-primary me-">Decrement</button>
+                    </div>
+                </div> 
+            </div>
+        </div>
+    `;
+
+    // Add Timer functionality
+    setInterval(() => {
+        const timerElement = document.getElementById("timer");
+        const now = new Date();
+        const timeString = now.toLocaleTimeString();  // Format the time
+        timerElement.textContent = timeString;  // Update the timer text
+    }, 1000);  // Update every second
 
     return content || "<p>No available trucks.</p>";
 }
