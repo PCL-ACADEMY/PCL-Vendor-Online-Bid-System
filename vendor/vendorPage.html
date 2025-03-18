@@ -33,10 +33,96 @@
 <body>
 
   <main>
-
-    <div style="margin: 50px;">
-        <div id="truckTables"></div>
-    </div>
+    <div style="text-align: left;">
+      <div style="font-size: 48px; font-weight: bold; color: #333; font-family: 'Arial', sans-serif;">
+          <span style="background: linear-gradient(to right, red, rgb(252, 85, 85)); -webkit-background-clip: text; color: transparent;">
+              Procure
+          </span>
+          <span style="background: linear-gradient(to right, rgb(0, 115, 153), darkblue); -webkit-background-clip: text; color: transparent;">
+              X
+          </span>
+      </div>
+      <div style="font-size: 18px; font-weight: bold; color: #580000; font-family: 'Arial', sans-serif;">
+          PCL Online Bidding System
+      </div>
+      <div style="font-size: 18px; font-weight: normal; color: #000000; font-family: 'Arial', sans-serif; padding-bottom: 10px;">
+          [Event Name]
+      </div>
+  </div>
+  
+  <input type="text" id="filterInput" class="filter-input" placeholder="Filter by any column...">
+  
+  <div class="table-container">
+      <table id="myTable">
+          <thead>
+              <tr>
+                  <th style="width: 25%;">Description</th>
+                  <th style="width: 3%; text-align: center;">Quantity Req.</th>
+                  <th style="width: 3%; text-align: center;">Quantity Offer</th>
+                  <th style="width: 0%; text-align: center;">  </th>
+                  <th style="width: 5%; text-align: center;">Bid Amount</th>
+                  <th style="width: 1%; text-align: center;">Rank</th>
+              </tr>
+          </thead>
+          <tbody>
+              <tr>
+                  <td>WING, N/A, N/A, 40ft, 30.0T, DRY,Hold</td>
+                  <td style="text-align: center;">20</td>
+                  <td style="text-align: center; padding: 5px;">
+                    <input type="text" placeholder="Offer.." style="width:100px; padding: 5px; border-radius: 5px; border: 1px solid #aaa;">
+                  </td>                    
+                  <td><input type="checkbox" style="margin-left: 10px; transform: scale(2);"></td>         
+                  <td style="text-align: center;">₱ 777</td>
+                  <td style="text-align: center;">1</td>
+              </tr>
+              <tr>
+                  <td>WING, 2800mm,  2500mm,  32ft, 13.0T, DRY,  Hold</td>
+                  <td style="text-align: center;">58</td>
+                  <td style="text-align: center; padding: 5px;">
+                      <input type="text" placeholder="Offer.." style="width:100px; padding: 5px; border-radius: 5px; border: 1px solid #aaa;">
+                  </td>           
+                  <td><input type="checkbox" style="margin-left: 10px; transform: scale(2);"></td>         
+                  <td style="text-align: center;">₱ 777</td>
+                  <td style="text-align: center;">1</td>
+              </tr>
+          </tbody>
+      </table>
+  </div>
+  
+  <div style="text-align: right; padding-top: 15px;">
+      <input type="text" placeholder="amount" style="width:100px; padding: 5px; border-radius: 5px; border: 1px solid #aaa;">
+      <button style="padding: 5px 20px; border-radius: 5px; border: 1px solid #aaa; background-color: #800000; color: white; cursor: pointer;">Decrement</button>
+  </div>
+  
+  <script>
+      // Filter function
+      document.getElementById('filterInput').addEventListener('keyup', function() {
+          let filter = document.getElementById('filterInput').value.toUpperCase();
+          let table = document.getElementById('myTable');
+          let tr = table.getElementsByTagName('tr');
+  
+          for (let i = 1; i < tr.length; i++) {
+              let td = tr[i].getElementsByTagName('td');
+              let matchFound = false;
+  
+              for (let j = 0; j < td.length; j++) {
+                  let textValue = td[j].textContent || td[j].innerText;
+                  if (textValue.toUpperCase().indexOf(filter) > -1) {
+                      matchFound = true;
+                      break;
+                  }
+              }
+  
+              if (matchFound) {
+                  tr[i].style.display = '';
+              } else {
+                  tr[i].style.display = 'none';
+              }
+          }
+      });
+  </script>
+  
+      
     
 
  
