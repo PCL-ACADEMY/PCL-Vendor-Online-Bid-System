@@ -24,49 +24,56 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 
     // Function to validate login
-    async function validateLogin(event) {
-        event.preventDefault();
+async function validateLogin(event) {
+    event.preventDefault();
 
-        let email = document.getElementById("email").value;
-        let password = document.getElementById("password").value;
+    let email = document.getElementById("email").value;
+    let password = document.getElementById("password").value;
 
-        try {
-            const vendorRef = collection(db, "VendorAccount");
-            const vendorSnapshot = await getDocs(vendorRef);
-            for (let doc of vendorSnapshot.docs) {
-                let data = doc.data();
-                if (data.username === email && data.password === password) {
-                    alert("vendor login successful!");
-                    localStorage.setItem('vendorType', 'vendor');
-                    localStorage.setItem('vendorEmail', email);
-                    localStorage.setItem('vendorDocId', doc.id);
-                    window.location.href = "vendor/option.html";
+    try {
+        // Check Vendor Account
+        const vendorRef = collection(db, "VendorAccount");
+        const vendorSnapshot = await getDocs(vendorRef);
+        for (let doc of vendorSnapshot.docs) {
+            let data = doc.data();
+            if (data.username === email && data.password === password) {
+                if (data.status === "Deactivated") {
+                    alert("Your account has been deactivated. Please contact support.");
                     return;
                 }
+                alert("Vendor login successful!");
+                localStorage.setItem('vendorType', 'vendor');
+                localStorage.setItem('vendorEmail', email);
+                localStorage.setItem('vendorDocId', doc.id);
+                window.location.href = "vendor/option.html";
+                return;
             }
-            const adminRef = collection(db, "AdminAccount");
-            const adminSnapshot = await getDocs(adminRef);
-            for (let doc of adminSnapshot.docs) {
-                let data = doc.data();
-                if (data.username === email && data.password === password) {
-                    alert("Admin login successful!");
-                    localStorage.setItem('userType', 'admin');
-                    localStorage.setItem('adminEmail', email);
-                    localStorage.setItem('adminDocId', doc.id);
-                    window.location.href = "admin/adminPage.html";
-                    return;
-                }
-            }
-
-            alert("Invalid username or password!");
-
-        } catch (error) {
-            console.error("Error validating login:", error);
-            alert("Error logging in. Please try again.");
         }
-    }
 
-    loginForm.addEventListener("submit", validateLogin);
+        // Check Admin Account
+        const adminRef = collection(db, "AdminAccount");
+        const adminSnapshot = await getDocs(adminRef);
+        for (let doc of adminSnapshot.docs) {
+            let data = doc.data();
+            if (data.username === email && data.password === password) {
+                alert("Admin login successful!");
+                localStorage.setItem('userType', 'admin');
+                localStorage.setItem('adminEmail', email);
+                localStorage.setItem('adminDocId', doc.id);
+                window.location.href = "admin/adminPage.html";
+                return;
+            }
+        }
+
+        alert("Invalid username or password!");
+
+    } catch (error) {
+        console.error("Error validating login:", error);
+        alert("Error logging in. Please try again.");
+    }
+}
+
+loginForm.addEventListener("submit", validateLogin);
 });
 
 if (logoutBtn) {
