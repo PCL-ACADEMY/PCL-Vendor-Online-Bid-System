@@ -137,36 +137,16 @@
             <input type="text"  id="filterInput"  placeholder="Filter by any column..." style="width: 300px; padding: 5px; border-radius: 5px; border: 1px solid #aaa;">
             <button style="padding: 5px 20px; border-radius: 5px; border: 1px solid #aaa; background-color: #800000; color: white; cursor: pointer;"> + Add Product</button>
         </div>
-        <table id="myTable">
+         <table id="myTable">
             <thead>
                 <tr>
                     <th style="width: 25%;">Description</th>
                     <th style="width: 5%; text-align: center;">Quantity Req.</th>
-                    <th style="width:3%; text-align: center;">Action</th>
+                    <th style="width: 3%; text-align: center;">Action</th>
                 </tr>
             </thead>
-            <tbody>
-                <tr>
-                    <td>WING, N/A, N/A, 40ft, 30.0T, DRY,Hold</td>
-                    <td style="text-align: center;">20</td>
-                    <td style="text-align: center;">
-                        <button style="padding: 5px 20px; border-radius: 5px; border: 1px solid #010101; background-color: #070085; color: white; cursor: pointer;">
-                            <i class="fas fa-edit"></i> Update
-                        </button>
-                    </td>
-                </tr>
-                <tr>
-                    <td>WING, 2800mm,  2500mm,  32ft, 13.0T, DRY,  Hold</td>
-                    <td style="text-align: center;">58</td>
-                    <td style="text-align: center;">
-                        <button style="padding: 5px 20px; border-radius: 5px; border: 1px solid #010101; background-color: #070085; color: white; cursor: pointer;">
-                            <i class="fas fa-edit"></i> Update
-                        </button>
-                    </td>
-                </tr>
-            </tbody>
+            <tbody></tbody> <!-- JavaScript will populate this -->
         </table>
-    </div>
 
     <script>
         // Filter function
@@ -225,6 +205,7 @@
   <script src="../assetsAd/js/main.js"></script>
   <script type="module" src="../assets/js/admin/account.js"></script>
   <script type="module" src="../event.js"></script>
+  <script type="module" src="../eventProductTable.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
 </body>
