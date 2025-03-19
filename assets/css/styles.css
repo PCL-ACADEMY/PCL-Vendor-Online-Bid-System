@@ -101,8 +101,23 @@ body {
   transform: translateY(0);
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
+.corner-image {
+  position: fixed;
+  bottom: 0;
+  right: 0;
+  width: 230px;
+  height: auto;
+  border-radius: 10px;
+  opacity: 0.3;
+  transition: all 0.3s ease-in-out;
+}
 
-/* Responsive adjustments */
+.corner-image:hover {
+  transform: scale(1.05);
+  opacity: 1;
+}
+
+
 @media (max-width: 768px) {
   .logo {
     font-size: 3rem;
