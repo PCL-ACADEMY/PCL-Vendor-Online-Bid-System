@@ -134,8 +134,8 @@ async function populateAdminTable() {
             adminData.push({
                 id: doc.id, 
                 name: data.Name || "N/A", 
-                username: data.Username || "N/A", 
-                password: data.Password || "" 
+                username: data.username || "N/A", 
+                password: data.password || "" 
             });
         });
 
