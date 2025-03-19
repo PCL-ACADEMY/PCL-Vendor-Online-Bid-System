@@ -89,8 +89,8 @@ function createVendorTable() {
                         <div class="mb-3">
                             <label for="modalStatusSelect" class="form-label">Status</label>
                             <select class="form-select" id="modalStatusSelect">
-                                <option value="Activated">Activated</option>
-                                <option value="Deactivated">Deactivated</option>
+                                <option value="Activated">Active</option>
+                                <option value="Deactivated">Inactive</option>
                             </select>
                         </div>
                         <div id="dateFields" class="mb-3">
@@ -293,52 +293,53 @@ window.showVendorDetails = function(docId) {
 
 window.saveVendorChanges = async function() {
     if (!currentVendorId) return;
-    
+
     try {
-        const company = document.getElementById("modalCompanyInput").value.trim();
         const username = document.getElementById("modalUsernameInput").value.trim();
-        const status = document.getElementById("modalStatusSelect").value;
         const password = document.getElementById("modalPasswordInput").value.trim();
-        
-        if (!company || !username) {
-            alert("Company and Username fields cannot be empty");
+        const status = document.getElementById("modalStatusSelect").value;
+
+        if (!username) {
+            alert("Username cannot be empty.");
             return;
         }
-        
+
         const updateData = {
-            Company: company,
-            username: username,
-            status: status
+            Username: username, 
+            Status: status
         };
-        
+
         if (password) {
-            updateData.password = password;
+            updateData.Password = password; // Only update password if provided
         }
-        
+
         const vendorRef = doc(db, "CompanyAccounts", currentVendorId);
         await updateDoc(vendorRef, updateData);
-        
-        console.log("Vendor details updated successfully");
-        
+
+        console.log("Vendor details updated successfully.");
+
+        // Update the frontend data and re-render table
         const vendorIndex = vendorData.findIndex(v => v.id === currentVendorId);
         if (vendorIndex !== -1) {
-            vendorData[vendorIndex].company = company;
-            vendorData[vendorIndex].username = Username;
+            vendorData[vendorIndex].company = "N/A"; // Keep company column with "N/A"
+            vendorData[vendorIndex].username = username;
             vendorData[vendorIndex].status = status;
             renderTable(vendorData);
         }
-        
+
+        // Close the modal after update
         const modalElement = document.getElementById("vendorDetailsModal");
         const modal = bootstrap.Modal.getInstance(modalElement);
         if (modal) modal.hide();
-        
+
         alert("Vendor details updated successfully!");
-        
+
     } catch (error) {
         console.error("Error updating vendor details:", error);
         alert("Failed to update vendor details. Please try again.");
     }
 };
+
 
 window.confirmDeleteVendor = function() {
     const detailsModal = bootstrap.Modal.getInstance(document.getElementById("vendorDetailsModal"));
@@ -396,70 +397,62 @@ window.showAddVendorModal = function() {
 
 window.addNewVendor = async function() {
     try {
-        const company = document.getElementById("modalCompanyInput").value.trim();
         const username = document.getElementById("modalUsernameInput").value.trim();
         const password = document.getElementById("modalPasswordInput").value.trim();
         const status = document.getElementById("modalStatusSelect").value;
-        
-        if (!company || !username || !password) {
-            alert("All fields are required for a new vendor account");
+
+        if (!username || !password) {
+            alert("Username and Password are required for a new vendor account.");
             return;
         }
-        
+
+        // Check if username already exists
         const vendorRef = collection(db, "CompanyAccounts");
-        const q = query(vendorRef, where("username", "==", Username));
+        const q = query(vendorRef, where("Username", "==", username));
         const querySnapshot = await getDocs(q);
-        
+
         if (!querySnapshot.empty) {
-            alert("This username (email) is already in use. Please choose another one.");
+            alert("This username is already in use. Please choose another one.");
             return;
         }
-        
-        const currentDate = new Date();
-        const expirationDate = new Date();
-        expirationDate.setFullYear(expirationDate.getFullYear() + 1);
-        
-        const currentDateStr = currentDate.toLocaleDateString();
-        const expirationDateStr = expirationDate.toLocaleDateString();
-        
+
+        // Generate a unique document ID (e.g., company1, company2, etc.)
         const nextCompanyNumber = await getNextCompanyNumber();
         const docId = `company${nextCompanyNumber}`;
-        
+
+        // Firestore document structure
         const newVendor = {
-            Company: company,
-            username: username,
-            password: password,
-            status: status,
-            DateCreated: currentDateStr,
-            Expiration: expirationDateStr
+            Username: username,
+            Password: password,
+            Status: status
         };
-        
+
         await setDoc(doc(db, "CompanyAccounts", docId), newVendor);
         console.log("New vendor account created with ID:", docId);
-        
+
+        // Update frontend vendor list
         vendorData.push({
             id: docId,
-            company: company,
+            company: "N/A", // Keeping Company field as "N/A" in UI
             username: username,
-            dateCreated: currentDateStr,
-            expiration: expirationDateStr,
-            status: status,
-            password: password
+            status: status
         });
-        
+
         renderTable(vendorData);
-        
+
+        // Close modal
         const modalElement = document.getElementById("vendorDetailsModal");
         const modal = bootstrap.Modal.getInstance(modalElement);
         if (modal) modal.hide();
-        
+
         alert("New vendor account created successfully!");
-        
+
     } catch (error) {
         console.error("Error adding new vendor account:", error);
         alert("Failed to create new vendor account. Please try again.");
     }
 };
+
 
 window.toggleVendorStatus = async function(docId, currentStatus) {
     try {
