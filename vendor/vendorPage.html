@@ -31,7 +31,9 @@
 </head>
 
 <body>
-
+    <div class="image-container">
+        <img class="corner-image-company" src="../assets/img/logo.png" alt="Corner Image" />
+    </div>
   <main>
     <div style="text-align: left;">
       <div style="font-size: 48px; font-weight: bold; color: #333; font-family: 'Arial', sans-serif;">
@@ -46,12 +48,12 @@
           PCL Online Bidding System
       </div>
       <div style="font-size: 18px; font-weight: normal; color: #000000; font-family: 'Arial', sans-serif; padding-bottom: 10px;">
-          [Event Name]
+        <div id="companyName"></div>
       </div>
   </div>
   
   <input type="text" id="filterInput" class="filter-input" placeholder="Filter by any column...">
-  
+
   <div class="table-container">
       <table id="myTable">
           <thead>
