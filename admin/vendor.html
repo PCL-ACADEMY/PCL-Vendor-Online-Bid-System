@@ -126,6 +126,81 @@
         </ol>
       </nav>
     </div><!-- End Page Title -->
+    <div class="table-container" style="display: none;">
+      <div style="text-align: right; padding-top: 15px;">
+          <input type="text" id="filterInput" placeholder="Filter by any column..." 
+                 style="width: 300px; padding: 5px; border-radius: 5px; border: 1px solid #aaa;">
+          <button style="padding: 5px 20px; border-radius: 5px; border: 1px solid #aaa; 
+                         background-color: #800000; color: white; cursor: pointer;"> 
+              + Add Product
+          </button>
+      </div>
+      <table id="myTable">
+          <thead>
+              <tr>
+                  <th style="width: 25%;">Description</th>
+                  <th style="width: 5%; text-align: center;">Quantity Req.</th>
+                  <th style="width: 3%; text-align: center;">Action</th>
+              </tr>
+          </thead>
+          <tbody></tbody> <!-- JavaScript will populate this -->
+      </table>
+  </div>
+  
+  <script>
+      async function loadProducts(eventId) {
+          try {
+              console.log(`Fetching products for event: ${eventId}`);
+  
+              // Show table container when event is clicked
+              document.querySelector(".table-container").style.display = "block";
+  
+              const tableBody = document.querySelector("#myTable tbody");
+              if (!tableBody) {
+                  console.error("Table not found in the DOM!");
+                  return;
+              }
+  
+              tableBody.innerHTML = ""; // Clear existing products
+  
+              const productsRef = collection(db, `Events/${eventId}/Products`);
+              const productsSnapshot = await getDocs(productsRef);
+  
+              if (productsSnapshot.empty) {
+                  console.log("No products found for this event.");
+                  tableBody.innerHTML = "<tr><td colspan='3' style='text-align:center;'><i>No products available</i></td></tr>";
+                  return;
+              }
+  
+              productsSnapshot.forEach((productDoc) => {
+                  const productData = productDoc.data();
+                  console.log("Product found:", productData);
+  
+                  const description = productData.Description || "No description";
+                  const quantityRequired = productData.QuantityRequired || 0;
+  
+                  const row = document.createElement("tr");
+                  row.innerHTML = `
+                      <td>${description}</td>
+                      <td style="text-align: center;">${quantityRequired}</td>
+                      <td style="text-align: center;">
+                          <button class="update-btn" data-product-id="${productDoc.id}" 
+                                  style="padding: 5px 20px; border-radius: 5px; border: 1px solid #010101; 
+                                         background-color: #070085; color: white; cursor: pointer;">
+                              <i class="fas fa-edit"></i> Update
+                          </button>
+                      </td>
+                  `;
+  
+                  tableBody.appendChild(row);
+              });
+  
+          } catch (error) {
+              console.error("Error loading products:", error);
+          }
+      }
+  </script>
+
 
     <div class="container mt-4">
       
