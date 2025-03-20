@@ -41,10 +41,26 @@ async function fetchEventData() {
             const productData = productDoc.data();
             const productId = productDoc.id;
 
-            // Fetch the logged-in company's bid for this product
+            // Fetch all bids for this product
             const bidsRef = collection(db, `Events/${eventId}/Products/${productId}/Bids`);
-            const bidsSnapshot = await getDocs(query(bidsRef, where("Company", "==", companyId)));
-            let bidData = bidsSnapshot.empty ? {} : bidsSnapshot.docs[0].data();
+            const bidsSnapshot = await getDocs(bidsRef);
+            let bidData = {};
+            let rank = "-";
+
+            if (!bidsSnapshot.empty) {
+                const sortedBids = bidsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }))
+                    .sort((a, b) => a.BidAmount - b.BidAmount); // Sort bids by lowest amount
+
+                sortedBids.forEach((bid, index) => {
+                    const bidDocRef = doc(db, `Events/${eventId}/Products/${productId}/Bids`, bid.id);
+                    updateDoc(bidDocRef, { Rank: index + 1 }); // Update rank in Firestore
+                    
+                    if (bid.Company === companyId) {
+                        bidData = bid;
+                        rank = index + 1;
+                    }
+                });
+            }
 
             let row = document.createElement("tr");
             row.setAttribute("data-product-id", productId); // Store product ID for updates
@@ -54,7 +70,7 @@ async function fetchEventData() {
                 <td style="text-align: center;" class="quantity-offered">${bidData.QuantityOffered || "-"}</td>
                 <td><input type="radio" name="selectedProduct" value="${productId}" style="margin-left: 10px; transform: scale(2);"></td>
                 <td style="text-align: center;" class="bid-amount">₱ ${bidData.BidAmount || 0}</td>
-                <td style="text-align: center;">${bidData.Rank || "-"}</td>
+                <td style="text-align: center;">${rank}</td>
             `;
             tableBody.appendChild(row);
         }
