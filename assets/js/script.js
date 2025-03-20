@@ -141,7 +141,8 @@ document.addEventListener('DOMContentLoaded', function() {
 
 async function fetchCompanyInfo() {
     try {
-        const userDocId = localStorage.getItem('userDocId'); 
+        const userDocId = localStorage.getItem('userDocId'); // Retrieve logged-in company's ID
+        
         if (!userDocId) {
             alert("No user logged in!");
             window.location.href = "index.html";
@@ -153,7 +154,7 @@ async function fetchCompanyInfo() {
         
         if (companyDoc.exists()) {
             const companyData = companyDoc.data();
-            console.log("Company Name: ", companyData.CompanyName); 
+            console.log("Company Name: ", companyData.CompanyName);
             document.getElementById('companyName').textContent = companyData.CompanyName; 
         } else {
             console.error("No such document!");
@@ -165,6 +166,5 @@ async function fetchCompanyInfo() {
     }
 }
 
-document.addEventListener("DOMContentLoaded", function() {
-    fetchCompanyInfo();
-});
+// Run on page load
+document.addEventListener("DOMContentLoaded", fetchCompanyInfo);
