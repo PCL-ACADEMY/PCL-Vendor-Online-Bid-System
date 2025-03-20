@@ -2,6 +2,22 @@ import { db } from "./assets/js/firebase-config.js";
 import { collection, getDocs, getDoc, query, where, doc, updateDoc } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-firestore.js";
 
 const submitButton = document.querySelector("button");
+const timerDisplay = document.getElementById("timer");
+const quantityInput = document.querySelector("input[placeholder='Quantity']");
+const amountInput = document.querySelector("input[placeholder='Amount']");
+const productRadios = document.querySelectorAll("input[name='selectedProduct']");
+const overlay = document.getElementById("overlay");
+const overlayTableBody = document.getElementById("overlay-table-body");
+const returnButton = document.getElementById("return-button");
+
+returnButton.addEventListener("click", async () => {
+    const companyId = localStorage.getItem('userDocId');
+    if (companyId) {
+        const companyDocRef = doc(db, "CompanyAccounts", companyId);
+        await updateDoc(companyDocRef, { Status: "Inactive" });
+    }
+    window.location.href = "../index.html";
+});
 
 async function fetchEventData() {
     try {
@@ -29,6 +45,17 @@ async function fetchEventData() {
             console.error("No event found for this company.");
             return;
         }
+
+        // Fetch event details
+        const eventDocRef = doc(db, "Events", eventId);
+        const eventDoc = await getDoc(eventDocRef);
+        if (!eventDoc.exists()) {
+            console.error("Event document not found.");
+            return;
+        }
+
+        const eventData = eventDoc.data();
+        startCountdown(eventData.StartTime, eventData.EndTime);
 
         // Fetch Products under the Event
         const productsRef = collection(db, `Events/${eventId}/Products`);
@@ -81,6 +108,7 @@ async function fetchEventData() {
     }
 }
 
+
 // Event listener for bid updates
 submitButton.addEventListener("click", async () => {
     submitButton.disabled = true; // Disable button while updating
@@ -113,38 +141,38 @@ submitButton.addEventListener("click", async () => {
             return;
         }
 
-        // Fetch the logged-in company's event
-        const companyDocRef = doc(db, "CompanyAccounts", companyId);
-        const companyDoc = await getDoc(companyDocRef);
-
-        if (!companyDoc.exists()) {
-            console.error("Company document not found.");
-            return;
-        }
-
-        const eventId = companyDoc.data().Event;
+        // Get eventId from localStorage if already fetched before (reduce Firestore reads)
+        let eventId = localStorage.getItem('eventId');
         if (!eventId) {
-            console.error("No event found for this company.");
-            return;
+            const companyDocRef = doc(db, "CompanyAccounts", companyId);
+            const companyDoc = await getDoc(companyDocRef);
+            if (!companyDoc.exists()) throw new Error("Company document not found.");
+            eventId = companyDoc.data().Event;
+            localStorage.setItem('eventId', eventId); // Cache eventId
         }
 
+        // Fetch the user's existing bid document directly
         const bidsRef = collection(db, `Events/${eventId}/Products/${productId}/Bids`);
-        const bidsSnapshot = await getDocs(query(bidsRef, where("Company", "==", companyId)));
+        const bidsQuery = query(bidsRef, where("Company", "==", companyId));
+        const bidsSnapshot = await getDocs(bidsQuery);
 
         if (!bidsSnapshot.empty) {
-            const bidDoc = bidsSnapshot.docs[0];
+            const bidDoc = bidsSnapshot.docs[0]; // Get the first (only) bid document
+            const bidDocRef = bidDoc.ref;
             const bidData = bidDoc.data();
-            const bidDocRef = doc(db, `Events/${eventId}/Products/${productId}/Bids`, bidDoc.id);
 
-            // Update Firestore
+            // Update Firestore with new bid amount
             await updateDoc(bidDocRef, {
                 QuantityOffered: quantity,
                 BidAmount: Math.max((bidData.BidAmount || 0) - decrementAmount, 0) // Prevent negative bid amount
             });
+
+            // Update the UI instantly instead of refetching
+            selectedProduct.closest("tr").querySelector(".quantity-offered").innerText = quantity;
+            selectedProduct.closest("tr").querySelector(".bid-amount").innerText = `₱ ${Math.max((bidData.BidAmount || 0) - decrementAmount, 0)}`;
         }
 
-        // Refresh the table after update
-        await fetchEventData();
+        // Reset input fields
         quantityInput.value = "";
         amountInput.value = "";
 
@@ -155,5 +183,62 @@ submitButton.addEventListener("click", async () => {
     }
 });
 
+
+function startCountdown(startTime, endTime) {
+    const startTimestamp = startTime.toDate();
+    const endTimestamp = endTime.toDate();
+    
+    function updateTimer() {
+        const now = new Date();
+        if (now < startTimestamp) {
+            timerDisplay.innerText = "Event has not started yet.";
+            disableInputs(true);
+            return;
+        }
+        
+        const remainingTime = Math.max(0, endTimestamp - now);
+        if (remainingTime === 0) {
+            timerDisplay.innerText = "Event has ended.";
+            disableInputs(true);
+            displayOverlay();
+            return;
+        }
+
+        disableInputs(false);
+
+        const hours = Math.floor(remainingTime / (1000 * 60 * 60));
+        const minutes = Math.floor((remainingTime % (1000 * 60 * 60)) / (1000 * 60));
+        const seconds = Math.floor((remainingTime % (1000 * 60)) / 1000);
+        
+        timerDisplay.innerText = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+    }
+    
+    updateTimer();
+    setInterval(updateTimer, 1000);
+}
+
+
+function disableInputs(disable) {
+    quantityInput.disabled = disable;
+    amountInput.disabled = disable;
+    submitButton.disabled = disable;
+    productRadios.forEach(radio => radio.disabled = disable);
+}
+
+function displayOverlay() {
+    overlayTableBody.innerHTML = "";
+    document.querySelectorAll("#myTable tbody tr").forEach(row => {
+        const cells = row.children;
+        const overlayRow = document.createElement("tr");
+        overlayRow.innerHTML = `
+            <td>${cells[0].innerText}</td>
+            <td>${cells[2].innerText}</td>
+            <td>${cells[4].innerText}</td>
+            <td>${cells[5].innerText}</td>
+        `;
+        overlayTableBody.appendChild(overlayRow);
+    });
+    overlay.style.display = "flex";
+}
 // Fetch initial data for logged-in company
 fetchEventData();

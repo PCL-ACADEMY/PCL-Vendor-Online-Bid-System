@@ -50,6 +50,8 @@
       <div style="font-size: 18px; font-weight: normal; color: #000000; font-family: 'Arial', sans-serif; padding-bottom: 10px;">
         <div id="companyName"></div>
       </div>
+      <div id="timer">
+      </div>
   </div>
   
   <input type="text" id="filterInput" class="filter-input" placeholder="Filter by any column...">
@@ -71,6 +73,7 @@
           </tbody>
       </table>
   </div>
+
   
   <div style="text-align: right; padding-top: 15px;">
     <input type="text" placeholder="Quantity" style="width:100px; padding: 5px; border-radius: 5px; border: 1px solid #aaa;">
@@ -111,6 +114,26 @@
 
  
   </main><!-- End #main -->
+
+  <div id="overlay" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.7); justify-content: center; align-items: center; flex-direction: column;">
+    <div style="background: white; padding: 20px; border-radius: 10px; text-align: center;">
+        <h2>Event Ended - Bid Summary</h2>
+        <table border="1" style="width: 100%; border-collapse: collapse;">
+            <thead>
+                <tr>
+                    <th>Description</th>
+                    <th>Quantity Offered</th>
+                    <th>Bid Amount</th>
+                    <th>Rank</th>
+                </tr>
+            </thead>
+            <tbody id="overlay-table-body"></tbody>
+        </table>
+        <br>
+        <button id="return-button">Return to Homepage</button>
+    </div>
+</div>
+
 
   <a href="#" class="back-to-top d-flex align-items-center justify-content-center"><i class="bi bi-arrow-up-short"></i></a>
 
