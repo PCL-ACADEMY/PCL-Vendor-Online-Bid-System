@@ -111,7 +111,7 @@ async function fetchEventData() {
 
 // Event listener for bid updates
 submitButton.addEventListener("click", async () => {
-    submitButton.disabled = true; 
+    submitButton.disabled = true;
 
     const quantityInput = document.querySelector("input[placeholder='Quantity']");
     const amountInput = document.querySelector("input[placeholder='Amount']");
@@ -129,6 +129,12 @@ submitButton.addEventListener("click", async () => {
 
     if (isNaN(quantity) || isNaN(decrementAmount)) {
         alert("Invalid input values.");
+        submitButton.disabled = false;
+        return;
+    }
+
+    if (decrementAmount < 300) {
+        alert("The amount to be decreased cannot be lower than 300.");
         submitButton.disabled = false;
         return;
     }
@@ -186,7 +192,7 @@ submitButton.addEventListener("click", async () => {
                     ...doc.data()
                 }));
 
-                //Check if new bid amount causes a tie
+                // Check if new bid amount causes a tie
                 const isTie = sortedBids.some(bid => bid.BidAmount === newBidAmount && bid.Company !== companyId);
                 if (isTie) {
                     alert("There will be a tie! Please increase the decrement amount to avoid ties.");
@@ -194,17 +200,20 @@ submitButton.addEventListener("click", async () => {
                     return;
                 }
 
+                // Update Firestore with the new bid amount 
                 await updateDoc(bidDocRef, {
                     QuantityOffered: quantity,
                     BidAmount: newBidAmount
                 });
 
+                // Fetch all updated bids and sort them
                 const updatedBidsSnapshot = await getDocs(bidsRef);
                 const updatedBids = updatedBidsSnapshot.docs.map(doc => ({
                     id: doc.id,
                     ...doc.data()
                 })).sort((a, b) => a.BidAmount - b.BidAmount);
 
+                // Assign new ranks and update Firestore
                 const updatePromises = updatedBids.map((bid, index) => {
                     const bidDocRef = doc(db, `Events/${eventId}/Products/${productId}/Bids`, bid.id);
                     return updateDoc(bidDocRef, { Rank: index + 1 });
@@ -212,6 +221,7 @@ submitButton.addEventListener("click", async () => {
 
                 await Promise.all(updatePromises); 
 
+                // Fetch the updated ranks
                 const finalBidsSnapshot = await getDocs(bidsRef);
                 const finalBids = finalBidsSnapshot.docs.map(doc => ({
                     id: doc.id,
@@ -223,7 +233,7 @@ submitButton.addEventListener("click", async () => {
                     const row = selectedProduct.closest("tr");
                     row.querySelector(".quantity-offered").innerText = quantity;
                     row.querySelector(".bid-amount").innerText = `₱ ${newBidAmount}`;
-                    row.querySelector("td:last-child").innerText = userBid.Rank;
+                    row.querySelector("td:last-child").innerText = userBid.Rank; 
                 }
             }
         }
@@ -238,6 +248,7 @@ submitButton.addEventListener("click", async () => {
         submitButton.disabled = false;
     }
 });
+
 
 
 function startCountdown(startTime, endTime) {
