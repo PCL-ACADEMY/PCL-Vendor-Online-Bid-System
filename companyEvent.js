@@ -112,7 +112,7 @@ async function fetchEventData() {
 // Event listener for bid updates
 submitButton.addEventListener("click", async () => {
     submitButton.disabled = true; // Disable button while updating
-    
+
     const quantityInput = document.querySelector("input[placeholder='Quantity']");
     const amountInput = document.querySelector("input[placeholder='Amount']");
     const selectedProduct = document.querySelector("input[name='selectedProduct']:checked");
@@ -151,7 +151,7 @@ submitButton.addEventListener("click", async () => {
             localStorage.setItem('eventId', eventId); // Cache eventId
         }
 
-        // Fetch the user's existing bid document directly
+        // Fetch the user's existing bid document
         const bidsRef = collection(db, `Events/${eventId}/Products/${productId}/Bids`);
         const bidsQuery = query(bidsRef, where("Company", "==", companyId));
         const bidsSnapshot = await getDocs(bidsQuery);
@@ -161,15 +161,63 @@ submitButton.addEventListener("click", async () => {
             const bidDocRef = bidDoc.ref;
             const bidData = bidDoc.data();
 
-            // Update Firestore with new bid amount
-            await updateDoc(bidDocRef, {
-                QuantityOffered: quantity,
-                BidAmount: Math.max((bidData.BidAmount || 0) - decrementAmount, 0) // Prevent negative bid amount
-            });
+            // Calculate new bid amount
+            const newBidAmount = Math.max((bidData.BidAmount || 0) - decrementAmount, 0);
 
-            // Update the UI instantly instead of refetching
-            selectedProduct.closest("tr").querySelector(".quantity-offered").innerText = quantity;
-            selectedProduct.closest("tr").querySelector(".bid-amount").innerText = `₱ ${Math.max((bidData.BidAmount || 0) - decrementAmount, 0)}`;
+            // Step 1: Fetch all existing bids for the selected product
+            const allBidsSnapshot = await getDocs(bidsRef);
+            if (!allBidsSnapshot.empty) {
+                // Step 2: Convert Firestore documents to an array and sort by bid amount (ascending)
+                const sortedBids = allBidsSnapshot.docs.map(doc => ({
+                    id: doc.id,
+                    ...doc.data()
+                }));
+
+                // Step 3: Check if new bid amount causes a tie
+                const isTie = sortedBids.some(bid => bid.BidAmount === newBidAmount && bid.Company !== companyId);
+                if (isTie) {
+                    alert("There will be a tie! Please increase the decrement amount to avoid ties.");
+                    submitButton.disabled = false;
+                    return;
+                }
+
+                // Step 4: Update Firestore with the new bid amount FIRST
+                await updateDoc(bidDocRef, {
+                    QuantityOffered: quantity,
+                    BidAmount: newBidAmount
+                });
+
+                // Step 5: Fetch all updated bids and sort them
+                const updatedBidsSnapshot = await getDocs(bidsRef);
+                const updatedBids = updatedBidsSnapshot.docs.map(doc => ({
+                    id: doc.id,
+                    ...doc.data()
+                })).sort((a, b) => a.BidAmount - b.BidAmount);
+
+                // Step 6: Assign new ranks and update Firestore
+                const updatePromises = updatedBids.map((bid, index) => {
+                    const bidDocRef = doc(db, `Events/${eventId}/Products/${productId}/Bids`, bid.id);
+                    return updateDoc(bidDocRef, { Rank: index + 1 }); // Rank starts from 1
+                });
+
+                await Promise.all(updatePromises); // Wait for all updates to complete
+
+                // Step 7: Fetch the updated ranks once
+                const finalBidsSnapshot = await getDocs(bidsRef);
+                const finalBids = finalBidsSnapshot.docs.map(doc => ({
+                    id: doc.id,
+                    ...doc.data()
+                })).sort((a, b) => a.BidAmount - b.BidAmount);
+
+                // Step 8: Update UI with new bid amount and rank
+                const userBid = finalBids.find(bid => bid.Company === companyId);
+                if (userBid) {
+                    const row = selectedProduct.closest("tr");
+                    row.querySelector(".quantity-offered").innerText = quantity;
+                    row.querySelector(".bid-amount").innerText = `₱ ${newBidAmount}`;
+                    row.querySelector("td:last-child").innerText = userBid.Rank; // Update displayed rank
+                }
+            }
         }
 
         // Reset input fields
