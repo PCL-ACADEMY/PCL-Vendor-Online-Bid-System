@@ -139,32 +139,6 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
 
-async function fetchCompanyInfo() {
-    try {
-        const userDocId = localStorage.getItem('userDocId'); 
-        if (!userDocId) {
-            alert("No user logged in!");
-            window.location.href = "index.html";
-            return;
-        }
-        
-        const companyDocRef = doc(db, "CompanyAccounts", userDocId);
-        const companyDoc = await getDoc(companyDocRef);
-        
-        if (companyDoc.exists()) {
-            const companyData = companyDoc.data();
-            console.log("Company Name: ", companyData.CompanyName); 
-            document.getElementById('companyName').textContent = companyData.CompanyName; 
-        } else {
-            console.error("No such document!");
-            alert("Company information not found.");
-        }
-    } catch (error) {
-        console.error("Error fetching company info:", error);
-        alert("Failed to fetch company info.");
-    }
-}
 
-document.addEventListener("DOMContentLoaded", function() {
-    fetchCompanyInfo();
-});
+// Run on page load
+document.addEventListener("DOMContentLoaded", fetchCompanyInfo);
