@@ -249,6 +249,84 @@ submitButton.addEventListener("click", async () => {
     }
 });
 
+document.getElementById("update").addEventListener("click", async () => {
+    fetchLatestTableData();
+});
+
+async function fetchLatestTableData() {
+    try {
+        const companyId = localStorage.getItem('userDocId');
+        if (!companyId) {
+            alert("You are not logged in!");
+            window.location.href = "index.html";
+            return;
+        }
+
+        const companyDocRef = doc(db, "CompanyAccounts", companyId);
+        const companyDoc = await getDoc(companyDocRef);
+        if (!companyDoc.exists()) {
+            console.error("Company document not found.");
+            return;
+        }
+
+        const eventId = companyDoc.data().Event;
+        if (!eventId) {
+            console.error("No event found for this company.");
+            return;
+        }
+
+        const productsRef = collection(db, `Events/${eventId}/Products`);
+        const productsSnapshot = await getDocs(productsRef);
+
+        let rows = [];
+
+        const bidPromises = productsSnapshot.docs.map(async (productDoc) => {
+            const productData = productDoc.data();
+            const productId = productDoc.id;
+
+            // Fetch bids for the product
+            const bidsRef = collection(db, `Events/${eventId}/Products/${productId}/Bids`);
+            const bidsSnapshot = await getDocs(bidsRef);
+            let bidData = {};
+            let rank = "-";
+
+            if (!bidsSnapshot.empty) {
+                const sortedBids = bidsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }))
+                    .sort((a, b) => a.BidAmount - b.BidAmount);
+
+                sortedBids.forEach((bid, index) => {
+                    const bidDocRef = doc(db, `Events/${eventId}/Products/${productId}/Bids`, bid.id);
+                    updateDoc(bidDocRef, { Rank: index + 1 });
+
+                    if (bid.Company === companyId) {
+                        bidData = bid;
+                        rank = index + 1;
+                    }
+                });
+            }
+
+            rows.push(`
+                <tr data-product-id="${productId}">
+                    <td>${productData.Description}</td>
+                    <td style="text-align: center;">${productData.QuantityRequired}</td>
+                    <td style="text-align: center;" class="quantity-offered">${bidData.QuantityOffered || "-"}</td>
+                    <td><input type="radio" name="selectedProduct" value="${productId}" style="margin-left: 10px; transform: scale(2);"></td>
+                    <td style="text-align: center;" class="bid-amount">₱ ${bidData.BidAmount || 0}</td>
+                    <td style="text-align: center;">${rank}</td>
+                </tr>
+            `);
+        });
+
+        await Promise.all(bidPromises);
+
+        const tableBody = document.querySelector("#myTable tbody");
+        tableBody.innerHTML = rows.join("");
+
+    } catch (error) {
+        console.error("Error fetching latest event data:", error);
+    }
+}
+
 
 
 function startCountdown(startTime, endTime) {

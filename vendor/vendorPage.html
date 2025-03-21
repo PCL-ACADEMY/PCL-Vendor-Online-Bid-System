@@ -2,6 +2,7 @@
 <html lang="en">
 
 <head>
+<!-- <meta http-equiv="refresh" content="5"> -->
   <meta charset="utf-8">
   <meta content="width=device-width, initial-scale=1.0" name="viewport">
   
@@ -50,7 +51,7 @@
       <div style="font-size: 18px; font-weight: normal; color: #000000; font-family: 'Arial', sans-serif; padding-bottom: 10px;">
         <div id="companyName"></div>
       </div>
-      <div id="timer">
+      <div id="timer" style="font-family: 'Courier New', Courier, monospace; font-size: 5rem; position: fixed; top: 20px; right: 20px;">
       </div>
   </div>
   
@@ -78,7 +79,8 @@
   <div style="text-align: right; padding-top: 15px;">
     <input type="text" placeholder="Quantity" style="width:100px; padding: 5px; border-radius: 5px; border: 1px solid #aaa;">
       <input type="text" placeholder="Amount" style="width:100px; padding: 5px; border-radius: 5px; border: 1px solid #aaa;">
-      <button style="padding: 5px 20px; border-radius: 5px; border: 1px solid #aaa; background-color: #800000; color: white; cursor: pointer;">Decrement</button>
+      <button id="decrement" style="padding: 5px 20px; border-radius: 5px; border: 1px solid #aaa; background-color: #800000; color: white; cursor: pointer;">Decrement</button>
+      <button id="update" style="padding: 5px 20px; border-radius: 5px; border: 1px solid #aaa; background-color: #800000; color: white; cursor: pointer;">Update</button>
   </div>
   
   <script>
