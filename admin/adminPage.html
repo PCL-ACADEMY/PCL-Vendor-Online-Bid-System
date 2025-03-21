@@ -33,90 +33,89 @@
 </head>
 
 <body>
+<!-- ======= Header ======= -->
+<header id="header" class="header fixed-top d-flex align-items-center">
+  <div class="d-flex align-items-center justify-content-between">
+    <a href="index.html" class="logo d-flex align-items-center">
+      <img src="../assets/img/pcl.png" alt="">
+      <span class="d-none d-lg-block">ProcureX PCL Inc.</span>
+    </a>
+    <i class="bi bi-list toggle-sidebar-btn"></i>
+  </div>
+  <nav class="header-nav ms-auto">
+    <ul class="d-flex align-items-center">
 
-  <!-- ======= Header ======= -->
-  <header id="header" class="header fixed-top d-flex align-items-center">
-    <div class="d-flex align-items-center justify-content-between">
-      <a href="index.html" class="logo d-flex align-items-center">
-        <img src="../assets/img/pcl.png" alt="">
-        <span class="d-none d-lg-block">ProcureX PCL Inc.</span>
-      </a>
-      <i class="bi bi-list toggle-sidebar-btn"></i>
-    </div>
-    <nav class="header-nav ms-auto">
-      <ul class="d-flex align-items-center">
-
-        <li class="nav-item d-block d-lg-none">
-          <a class="nav-link nav-icon search-bar-toggle " href="#">
-            <i class="bi bi-search"></i>
-          </a>
-        </li>
-        <li class="nav-item dropdown pe-3">
-          <a class="nav-link nav-profile d-flex align-items-center pe-0" href="#" data-bs-toggle="dropdown">
-            <span id="displayName" class="d-none d-md-block ps-2"></span> | <span id="logoutBtnAdmin">Logout</span>
-          </a>
-        </li>
-      </ul>
-    </nav>
-  </header>
-  <!-- ======= Sidebar ======= -->
-  <aside id="sidebar" class="sidebar">
-
-    <ul class="sidebar-nav" id="sidebar-nav">
-
-      <li class="nav-item">
-        <a class="nav-link " href="adminPage.html">
-          <i class="bi bi-grid"></i>
-          <span>Dashboard</span>
+      <li class="nav-item d-block d-lg-none">
+        <a class="nav-link nav-icon search-bar-toggle " href="#">
+          <i class="bi bi-search"></i>
         </a>
       </li>
-
-      <li class="nav-item">
-        <a class="nav-link collapsed" data-bs-target="#components-nav" data-bs-toggle="collapse" href="#">
-          <i class="bi bi-menu-button-wide"></i><span>Event Manage</span><i class="bi bi-chevron-down ms-auto"></i>
-        </a>
-        <ul id="components-nav" class="nav-content collapse " data-bs-parent="#sidebar-nav">
-          <li>
-            <a href="events.html"> <!-- ======= Nakadynamic .html?#1 ======= -->
-              <i class="bi bi-circle"></i><span>[Event Name]</span>
-            </a>
-          </li>
-        </ul>
-      </li>
-
-      <li class="nav-item">
-        <a class="nav-link collapsed" data-bs-target="#forms-nav" data-bs-toggle="collapse" href="#">
-          <i class="bi bi-journal-text"></i><span>Bidding Records</span><i class="bi bi-chevron-down ms-auto"></i>
-        </a>
-        <ul id="forms-nav" class="nav-content collapse " data-bs-parent="#sidebar-nav">
-            <li>
-                <a href="eventrecord.html"> <!-- ======= Nakadynamic .html?#1 ======= -->
-                    <i class="bi bi-circle"></i><span>[Event Name]</span>
-                </a>
-            </li>
-        </ul>
-      </li>
-
-
-      
-
-      <li class="nav-heading">Pages</li>
-
-      <li class="nav-item">
-        <a class="nav-link collapsed" href="admin.html">
-          <i class="bi bi-people"></i>
-          <span>Admin</span>
-        </a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link collapsed" href="Vendor.html">
-          <i class="bi bi-people"></i>
-          <span>Vendor</span>
+      <li class="nav-item dropdown pe-3">
+        <a class="nav-link nav-profile d-flex align-items-center pe-0" href="#" data-bs-toggle="dropdown">
+          <span id="displayName" class="d-none d-md-block ps-2"></span> | <span id="logoutBtnAdmin">Logout</span>
         </a>
       </li>
     </ul>
+  </nav>
+</header>
+<!-- ======= Sidebar ======= -->
+<aside id="sidebar" class="sidebar">
 
-  </aside><!-- End Sidebar-->
+  <ul class="sidebar-nav" id="sidebar-nav">
+
+    <li class="nav-item">
+      <a class="nav-link " href="adminPage.html">
+        <i class="bi bi-grid"></i>
+        <span>Dashboard</span>
+      </a>
+    </li>
+
+    <li class="nav-item">
+      <a class="nav-link" data-bs-target="#components-nav" data-bs-toggle="collapse" href="#">
+          <i class="bi bi-menu-button-wide"></i><span>Event Manage</span><i class="bi bi-chevron-down ms-auto"></i>
+      </a>
+      <ul id="components-nav" class="nav-content collapse" data-bs-parent="#sidebar-nav">
+          <li>
+              <ul id="event-list">
+                  <!-- Events will be dynamically inserted here -->
+              </ul>
+          </li>
+      </ul>
+  </li>
+
+  <li class="nav-item">
+    <a class="nav-link collapsed" data-bs-target="#forms-nav" data-bs-toggle="collapse" href="#">
+        <i class="bi bi-journal-text"></i><span>Bidding Records</span><i class="bi bi-chevron-down ms-auto"></i>
+    </a>
+    <ul id="forms-nav" class="nav-content collapse " data-bs-parent="#sidebar-nav">
+        <li>
+            <ul id="bidding-records-list">
+                <!-- Events will be dynamically inserted here -->
+            </ul>
+        </li>
+    </ul>
+</li>
+
+
+    
+
+    <li class="nav-heading">Pages</li>
+
+    <li class="nav-item">
+      <a class="nav-link collapsed" href="admin.html">
+        <i class="bi bi-people"></i>
+        <span>Admin</span>
+      </a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link collapsed" href="Vendor.html">
+        <i class="bi bi-people"></i>
+        <span>Vendor</span>
+      </a>
+    </li>
+  </ul>
+
+</aside><!-- End Sidebar-->
 
   <main id="main" class="main">
 
@@ -130,68 +129,132 @@
       </nav>
     </div><!-- End Page Title -->
 
+    <div class="table-container" style="display: none;">
+      <div style="text-align: right; padding-top: 15px;">
+          <input type="text" id="filterInput" placeholder="Filter by any column..." 
+                 style="width: 300px; padding: 5px; border-radius: 5px; border: 1px solid #aaa;">
+          <button style="padding: 5px 20px; border-radius: 5px; border: 1px solid #aaa; 
+                         background-color: #800000; color: white; cursor: pointer;"> 
+              + Add Product
+          </button>
+      </div>
+      <table id="myTable">
+          <thead>
+              <tr>
+                  <th style="width: 25%;">Description</th>
+                  <th style="width: 5%; text-align: center;">Quantity Req.</th>
+                  <th style="width: 3%; text-align: center;">Action</th>
+              </tr>
+          </thead>
+          <tbody></tbody> <!-- JavaScript will populate this -->
+      </table>
+  </div>
+  
+  <script>
+      async function loadProducts(eventId) {
+          try {
+              console.log(`Fetching products for event: ${eventId}`);
+  
+              // Show table container when event is clicked
+              document.querySelector(".table-container").style.display = "block";
+  
+              const tableBody = document.querySelector("#myTable tbody");
+              if (!tableBody) {
+                  console.error("Table not found in the DOM!");
+                  return;
+              }
+  
+              tableBody.innerHTML = ""; // Clear existing products
+  
+              const productsRef = collection(db, `Events/${eventId}/Products`);
+              const productsSnapshot = await getDocs(productsRef);
+  
+              if (productsSnapshot.empty) {
+                  console.log("No products found for this event.");
+                  tableBody.innerHTML = "<tr><td colspan='3' style='text-align:center;'><i>No products available</i></td></tr>";
+                  return;
+              }
+  
+              productsSnapshot.forEach((productDoc) => {
+                  const productData = productDoc.data();
+                  console.log("Product found:", productData);
+  
+                  const description = productData.Description || "No description";
+                  const quantityRequired = productData.QuantityRequired || 0;
+  
+                  const row = document.createElement("tr");
+                  row.innerHTML = `
+                      <td>${description}</td>
+                      <td style="text-align: center;">${quantityRequired}</td>
+                      <td style="text-align: center;">
+                          <button class="update-btn" data-product-id="${productDoc.id}" 
+                                  style="padding: 5px 20px; border-radius: 5px; border: 1px solid #010101; 
+                                         background-color: #070085; color: white; cursor: pointer;">
+                              <i class="fas fa-edit"></i> Update
+                          </button>
+                      </td>
+                  `;
+  
+                  tableBody.appendChild(row);
+              });
+  
+          } catch (error) {
+              console.error("Error loading products:", error);
+          }
+      }
+  </script>
+
     <section class="section dashboard">
       <div class="row">
-
-            <!-- Sales Card -->
-            <div class="col-xxl-4 col-md-6">
-              <div class="card info-card users-card">
-                <div class="card-body">
-                  <h5 class="card-title">Events <span>| Status</span></h5>
-
-                  <div class="d-flex align-items-center">
-                    <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
-                      <i class="bi bi-tools"></i>
-                    </div>
-                    <div class="ps-3">
-                      <h6>0</h6>
-                      <span class="text-success small pt-1 fw-bold">Total</span> <span class="text-muted small pt-2 ps-1">Events</span>
-
-                    </div>
-                  </div>
+        <div class="col-xxl-4 col-md-6">
+          <div class="card info-card users-card">
+            <div class="card-body">
+              <h5 class="card-title">Events <span>| Status</span></h5>
+              <div class="d-flex align-items-center">
+                <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
+                  <i class="bi bi-tools"></i>
                 </div>
-
-              </div>
-            </div><!-- End Sales Card -->
-
-            <!-- Revenue Card -->
-            <div class="col-xxl-4 col-md-6">
-              <div class="card info-card players-card">
-                <div class="card-body">
-                  <h5 class="card-title">Admin <span>| Status</span></h5>
-
-                  <div class="d-flex align-items-center">
-                    <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
-                      <i class="bi bi-truck"></i>
-                    </div>
-                    <div class="ps-3">
-                      <h6>0</h6>
-
-                      <span class="text-success small pt-1 fw-bold">Total</span> <span class="text-muted small pt-2 ps-1">Admins</span>
-
-                    </div>
-                  </div>
-                </div>
-
-              </div>
-            </div>
-
-            <div class="col-xxl-4 col-xl-12">
-              <div class="card info-card colleges-card">
-                <div class="card-body">
-                  <h5 class="card-title">Company <span>| Status</span></h5>
-                  <div class="d-flex align-items-center">
-                    <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
-                      <i class="bi bi-gear"></i>
-                    </div>
-                    <div class="ps-3">
-                      <h6>0</h6>
-                      <span class="text-success small pt-1 fw-bold">Total</span> <span class="text-muted small pt-2 ps-1">Companies</span>
-                    </div>
-                  </div>
+                <div class="ps-3">
+                  <h6 id="eventCount">0</h6>
+                  <span class="text-success small pt-1 fw-bold">Total</span> <span class="text-muted small pt-2 ps-1">Events</span>
                 </div>
               </div>
             </div>
+          </div>
+        </div>
+      
+        <div class="col-xxl-4 col-md-6">
+          <div class="card info-card players-card">
+            <div class="card-body">
+              <h5 class="card-title">Admin <span>| Status</span></h5>
+              <div class="d-flex align-items-center">
+                <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
+                  <i class="bi bi-truck"></i>
+                </div>
+                <div class="ps-3">
+                  <h6 id="adminCount">0</h6>
+                  <span class="text-success small pt-1 fw-bold">Total</span> <span class="text-muted small pt-2 ps-1">Admins</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      
+        <div class="col-xxl-4 col-xl-12">
+          <div class="card info-card colleges-card">
+            <div class="card-body">
+              <h5 class="card-title">Company <span>| Status</span></h5>
+              <div class="d-flex align-items-center">
+                <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
+                  <i class="bi bi-gear"></i>
+                </div>
+                <div class="ps-3">
+                  <h6 id="companyCount">0</h6>
+                  <span class="text-success small pt-1 fw-bold">Total</span> <span class="text-muted small pt-2 ps-1">Companies</span>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </section>
@@ -222,6 +285,8 @@
   <!-- Template Main JS File -->
   <script src="../assetsAd/js/main.js"></script>
   <script type="module" src="../assets/js/admin/account.js"></script>
+  <script type="module" src="../event.js"></script>
+  <script type="module" src="../assets/js/admin/dashboard.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
 </body>

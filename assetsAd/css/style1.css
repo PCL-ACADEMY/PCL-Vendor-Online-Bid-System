@@ -1314,6 +1314,22 @@ tbody tr:nth-child(even) {
   border: 1px solid #ddd;
 }
 
+.corner-image-company {
+  position: fixed;
+  bottom: 0;
+  right: 0;
+  width: 230px;
+  height: auto;
+  border-radius: 10px;
+  opacity: 0.3;
+  transition: all 0.3s ease-in-out;
+}
+
+.corner-image-company:hover {
+  transform: scale(1.05);
+  opacity: 1;
+}
+
 /* Responsive styling */
 @media (max-width: 768px) {
   table {
