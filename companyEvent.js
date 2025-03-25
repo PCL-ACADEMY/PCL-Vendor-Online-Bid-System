@@ -133,8 +133,8 @@ submitButton.addEventListener("click", async () => {
         return;
     }
 
-    if (decrementAmount < 300) {
-        alert("The amount to be decreased cannot be lower than 300.");
+    if (decrementAmount < 3000) {
+        alert("The amount to be decreased cannot be lower than 3000.");
         submitButton.disabled = false;
         return;
     }
