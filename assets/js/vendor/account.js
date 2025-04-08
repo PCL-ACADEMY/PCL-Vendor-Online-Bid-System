@@ -1,4 +1,4 @@
-import { collection, getDocs, query, where, doc, updateDoc, addDoc, setDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-firestore.js";
+import { collection, getDocs, query, where, doc, updateDoc, setDoc, deleteDoc, getDoc } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-firestore.js";
 import { db } from "../firebase-config.js";
 
 async function displayAdminName() {
@@ -44,16 +44,27 @@ function createVendorTable() {
             <div class="card-body">
                 <div class="d-flex justify-content-between align-items-center mb-3">
                     <h4 class="card-title">Vendor Accounts</h4>
-                    <button class="btn btn-success" onclick="showAddVendorModal()">Add Vendor Account</button>
+                    <div>
+                        <label for="eventFilter">Filter by Event:</label>
+                        <select id="eventFilter">
+                            <option value="">All Events</option>
+                        </select>
+
+                        <label for="statusFilter">Filter by Status:</label>
+                        <select id="statusFilter">
+                            <option value="">All Status</option>
+                        </select>
+                        <button class="btn btn-success ms-3" onclick="showAddVendorModal()">Add Vendor Account</button>
+                    </div>
                 </div>
-                <input type="text" id="vendor-search" class="form-control mb-3" placeholder="Search by company or username..." oninput="filterTable(this.value)">
                 <table class="table table-striped">
                     <thead>
                         <tr>
-                            <th>ID</th>
                             <th>Company</th>
+                            <th>Event</th>
                             <th>Username</th>
                             <th>Status</th>
+                            <th>Activity</th>
                             <th>Actions</th>
                         </tr>
                     </thead>
@@ -89,22 +100,15 @@ function createVendorTable() {
                         <div class="mb-3">
                             <label for="modalStatusSelect" class="form-label">Status</label>
                             <select class="form-select" id="modalStatusSelect">
-                                <option value="Activated">Active</option>
-                                <option value="Deactivated">Inactive</option>
+                                <option value="Active">Active</option>
+                                <option value="Inactive">Inactive</option>
                             </select>
-                        </div>
-                        <div id="dateFields" class="mb-3">
-                            <div class="row">
-                                <div class="col-md-6">
-                                    <label class="form-label">Date Created</label>
-                                    <p id="modalDateCreated" class="form-control-plaintext"></p>
-                                </div>
-                                <div class="col-md-6">
-                                    <label class="form-label">Expiration Date</label>
-                                    <p id="modalExpiration" class="form-control-plaintext"></p>
-                                </div>
-                            </div>
-                        </div>
+                        </div>  
+                        <div class="mb-3">
+                            <label for="modalEventSelect" class="form-label">Event</label>
+                            <select class="form-select" id="modalEventSelect">
+                            </select>
+                        </div> 
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
@@ -134,74 +138,123 @@ function createVendorTable() {
             </div>
         </div>
     `;
-    
-    const searchInput = document.getElementById("vendor-search");
-    if (searchInput) {
-        searchInput.addEventListener("input", function() {
-            filterTable(this.value);
-        });
-    }
 }
+
+let allVendorData = []; // Global variable to store all vendor data
 
 async function populateVendorTable() {
     try {
         const vendorRef = collection(db, "CompanyAccounts");
         const vendorSnapshot = await getDocs(vendorRef);
-        
-        vendorData = [];
-        
+
+        const vendorData = [];
+
         if (vendorSnapshot.empty) {
             console.log("No vendor accounts found");
             renderTable([]);
             return;
         }
-        
-        vendorSnapshot.forEach((doc) => {
-            const data = doc.data();
+
+        for (const vendorDoc of vendorSnapshot.docs) {
+            const data = vendorDoc.data();
+            let eventName = "N/A";
+
+            if (data.Event) {
+                const eventDocRef = doc(db, "Events", data.Event); 
+                const eventDoc = await getDoc(eventDocRef);
+                if (eventDoc.exists()) {
+                    eventName = eventDoc.data().Name || data.Event;
+                } else {
+                    eventName = data.Event;
+                }
+            }
+
             vendorData.push({
-                id: doc.id,
-                company: data.Company || "N/A",
+                id: vendorDoc.id,
+                company: vendorDoc.id,
+                event: eventName,
                 username: data.Username || "N/A",
-                dateCreated: data.DateCreated || "N/A",
-                expiration: data.Expiration || "N/A",
                 status: data.Status || "N/A",
+                activity: data.Activity || "N/A",
                 password: data.Password || "N/A"
             });
-        });
-        
+        }
+
+        allVendorData = vendorData; // Store all data globally
         console.log("Loaded vendor data:", vendorData.length, "records");
-        renderTable(vendorData);
-        
+
+        // Load filter options
+        loadFilters();
+
+        renderTable(vendorData); // Initial render with all data
+
     } catch (error) {
         console.error("Error populating vendor table:", error);
         renderTable([]);
     }
 }
 
-function renderTable(data) {
+function loadFilters() {
+    const eventFilter = document.getElementById("eventFilter");
+    const statusFilter = document.getElementById("statusFilter");
+
+    // Populate event filter
+    const events = [...new Set(allVendorData.map(v => v.event))];
+    events.forEach(event => {
+        eventFilter.innerHTML += `<option value="${event}">${event}</option>`;
+    });
+
+    // Populate status filter
+    const statuses = [...new Set(allVendorData.map(v => v.status))];
+    statuses.forEach(status => {
+        statusFilter.innerHTML += `<option value="${status}">${status}</option>`;
+    });
+
+    // Add event listeners for the filters
+    eventFilter.addEventListener("change", renderTable);
+    statusFilter.addEventListener("change", renderTable);
+}
+
+function renderTable() {
     const tableBody = document.querySelector("#vendor-table-body");
+
+    const eventFilterValue = document.getElementById("eventFilter").value;
+    const statusFilterValue = document.getElementById("statusFilter").value;
+
+    // Filter vendor data based on the selected filters
+    let filteredData = [...allVendorData];
+
+    if (eventFilterValue) {
+        filteredData = filteredData.filter(vendor => vendor.event === eventFilterValue);
+    }
+
+    if (statusFilterValue) {
+        filteredData = filteredData.filter(vendor => vendor.status === statusFilterValue);
+    }
 
     tableBody.innerHTML = "";
 
-    if (data.length === 0) {
+    if (filteredData.length === 0) {
         tableBody.innerHTML = `
             <tr>
-                <td colspan="5" class="text-center">No matching vendor accounts found</td>
+                <td colspan="6" class="text-center">No matching vendor accounts found</td>
             </tr>
         `;
         return;
     }
 
     let tableHTML = "";
-    data.forEach((vendor) => {
-        const statusClass = vendor.status === "Activated" ? "text-success" : "text-danger";
-        
+    filteredData.forEach((vendor) => {
+        const statusClass = vendor.status === "Active" ? "text-success" : "text-danger";
+        const activityColor = vendor.activity === "Online" ? "style='color: blue; font-weight: 500;'" : "";
+
         tableHTML += `
             <tr>
-                <td>${vendor.id}</td>
                 <td>${vendor.company}</td>
+                <td>${vendor.event}</td>
                 <td>${vendor.username}</td>
                 <td><span class="${statusClass}">${vendor.status}</span></td>
+                <td><span ${activityColor}>${vendor.activity}</span></td>
                 <td>
                     <button class="btn btn-primary" onclick="showVendorDetails('${vendor.id}')">Update</button>
                 </td>
@@ -212,85 +265,49 @@ function renderTable(data) {
     tableBody.innerHTML = tableHTML;
 }
 
-function filterTable(searchText) {
-    console.log("Filtering with:", searchText);
-    
-    if (!searchText.trim()) {
-        renderTable(vendorData);
-        return;
-    }
-
-    const searchLower = searchText.toLowerCase();
-    const filteredData = vendorData.filter(vendor =>
-        vendor.company.toLowerCase().includes(searchLower) ||
-        vendor.username.toLowerCase().includes(searchLower)
-    );
-
-    console.log("Filtered data:", filteredData.length, "records");
-    renderTable(filteredData);
-}
-
-async function getNextCompanyNumber() {
-    try {
-        const vendorRef = collection(db, "CompanyAccounts");
-        const vendorSnapshot = await getDocs(vendorRef);
-        
-        if (vendorSnapshot.empty) {
-            return 1; 
-        }
-        
-        const companyNumbers = [];
-        vendorSnapshot.forEach((doc) => {
-            const docId = doc.id;
-            const match = docId.match(/^company(\d+)$/);
-            if (match) {
-                const num = parseInt(match[1]);
-                companyNumbers.push(num);
-            }
-        });
-        
-        if (companyNumbers.length === 0) {
-            return 1;
-        }
-        
-        const maxNumber = Math.max(...companyNumbers);
-        return maxNumber + 1;
-    } catch (error) {
-        console.error("Error getting next company number:", error);
-        return Date.now(); 
-    }
-}
-
 window.showVendorDetails = function(docId) {
     currentVendorId = docId;
-    const vendor = vendorData.find(v => v.id === docId);
-    
-    if (vendor) {
-        document.getElementById("modalTitle").textContent = "Update Vendor Account";
-        document.getElementById("modalCompanyInput").value = vendor.company;
-        document.getElementById("modalUsernameInput").value = vendor.username;
-        document.getElementById("modalPasswordInput").value = "";
-        document.getElementById("passwordField").style.display = "block";
-        document.getElementById("passwordHelpText").textContent = "Leave blank to keep the current password";
-        
-        document.getElementById("dateFields").style.display = "block";
-        document.getElementById("modalDateCreated").textContent = vendor.dateCreated;
-        document.getElementById("modalExpiration").textContent = vendor.expiration;
-        document.getElementById("modalStatusSelect").value = vendor.status;
-        
-        const saveVendorBtn = document.getElementById("saveVendorBtn");
-        saveVendorBtn.textContent = "Save Changes";
-        saveVendorBtn.onclick = saveVendorChanges;
-        
-        const deleteVendorBtn = document.getElementById("deleteVendorBtn");
-        deleteVendorBtn.style.display = "block";
-        deleteVendorBtn.onclick = confirmDeleteVendor;
-        
-        const modal = new bootstrap.Modal(document.getElementById("vendorDetailsModal"));
-        modal.show();
-    }
-};
 
+    // Reference to the vendor document
+    const vendorRef = doc(db, "CompanyAccounts", docId);
+    
+    // Get the document from Firestore
+    getDoc(vendorRef).then((docSnap) => {
+        if (docSnap.exists()) {
+            const vendor = docSnap.data();
+            
+            // Populate the modal with vendor data
+            document.getElementById("modalTitle").textContent = "Update Vendor Account";
+            document.getElementById("modalCompanyInput").value = docId;  // Use document ID as company value
+            document.getElementById("modalUsernameInput").value = vendor.Username;  // Fetch username from Firestore
+            document.getElementById("modalPasswordInput").value = "";
+            document.getElementById("passwordField").style.display = "block";
+            document.getElementById("passwordHelpText").textContent = "Leave blank to keep the current password";
+
+            // Fetch and set the status from Firestore
+            if (vendor.status) {
+                document.getElementById("modalStatusSelect").value = vendor.Status; // Set the status value
+            }
+
+            // Update buttons and actions
+            const saveVendorBtn = document.getElementById("saveVendorBtn");
+            saveVendorBtn.textContent = "Save Changes";
+            saveVendorBtn.onclick = saveVendorChanges;
+
+            const deleteVendorBtn = document.getElementById("deleteVendorBtn");
+            deleteVendorBtn.style.display = "block";
+            deleteVendorBtn.onclick = confirmDeleteVendor;
+
+            // Show the modal
+            const modal = new bootstrap.Modal(document.getElementById("vendorDetailsModal"));
+            modal.show();
+        } else {
+            console.error("Vendor not found in Firestore");
+        }
+    }).catch((error) => {
+        console.error("Error getting vendor data:", error);
+    });
+};
 window.saveVendorChanges = async function() {
     if (!currentVendorId) return;
 
@@ -373,7 +390,7 @@ window.deleteVendor = async function() {
 
 window.showAddVendorModal = function() {
     currentVendorId = null;
-    
+
     document.getElementById("modalTitle").textContent = "Add New Vendor Account";
     document.getElementById("modalCompanyInput").value = "";
     document.getElementById("modalUsernameInput").value = "";
@@ -400,9 +417,12 @@ window.addNewVendor = async function() {
         const username = document.getElementById("modalUsernameInput").value.trim();
         const password = document.getElementById("modalPasswordInput").value.trim();
         const status = document.getElementById("modalStatusSelect").value;
+        const companyId = document.getElementById("modalCompanyInput").value.trim(); 
+        const eventId = document.getElementById("modalEventSelect").value; // Get the selected event ID
 
-        if (!username || !password) {
-            alert("Username and Password are required for a new vendor account.");
+        // Check if necessary fields are filled
+        if (!username || !password || !companyId || !eventId) {
+            alert("Username, Password, Company ID, and Event are required for a new vendor account.");
             return;
         }
 
@@ -416,26 +436,24 @@ window.addNewVendor = async function() {
             return;
         }
 
-        // Generate a unique document ID (e.g., company1, company2, etc.)
-        const nextCompanyNumber = await getNextCompanyNumber();
-        const docId = `company${nextCompanyNumber}`;
-
-        // Firestore document structure
+        // Firestore document structure, including the Event field
         const newVendor = {
             Username: username,
             Password: password,
-            Status: status
+            Status: status,
+            Event: eventId // Add the selected event ID to the vendor document
         };
 
-        await setDoc(doc(db, "CompanyAccounts", docId), newVendor);
-        console.log("New vendor account created with ID:", docId);
+        // Set the document using the company ID (from modalCompanyInput)
+        await setDoc(doc(db, "CompanyAccounts", companyId), newVendor);
+        console.log(`New vendor account created for ${companyId}`);
 
-        // Update frontend vendor list
+        // Update frontend vendor list (if needed)
         vendorData.push({
-            id: docId,
-            company: "N/A", // Keeping Company field as "N/A" in UI
-            username: username,
-            status: status
+            id: companyId,
+            Username: username,
+            Status: status,
+            Event: eventId // Optionally include event in the vendor data to render in the table
         });
 
         renderTable(vendorData);
@@ -447,6 +465,9 @@ window.addNewVendor = async function() {
 
         alert("New vendor account created successfully!");
 
+        // Optionally, reload or update vendor data on the table
+        populateVendorTable();
+
     } catch (error) {
         console.error("Error adding new vendor account:", error);
         alert("Failed to create new vendor account. Please try again.");
@@ -456,7 +477,7 @@ window.addNewVendor = async function() {
 
 window.toggleVendorStatus = async function(docId, currentStatus) {
     try {
-        const newStatus = currentStatus === "Activated" ? "Deactivated" : "Activated";
+        const newStatus = currentStatus === "Active" ? "Inactive" : "Active";
         const vendorRef = doc(db, "VendorAccount", docId);
         await updateDoc(vendorRef, { status: newStatus });
         console.log(`Vendor status updated to ${newStatus}`);
@@ -473,12 +494,10 @@ window.toggleVendorStatus = async function(docId, currentStatus) {
     }
 };
 
-window.filterTable = filterTable;
 window.showVendorDetails = showVendorDetails;
 window.saveVendorChanges = saveVendorChanges;
 window.confirmDeleteVendor = confirmDeleteVendor;
 window.deleteVendor = deleteVendor;
-window.showAddVendorModal = showAddVendorModal;
 window.addNewVendor = addNewVendor;
 window.toggleVendorStatus = toggleVendorStatus;
 
@@ -526,66 +545,46 @@ document.addEventListener("DOMContentLoaded", function() {
     }
 });
 
+const logoutBtnAdmin = document.getElementById('logoutBtnAdmin');
+if (logoutBtnAdmin) {
+  logoutBtnAdmin.addEventListener('click', function() {
+    sessionStorage.clear();
+    localStorage.removeItem('userType');
+    window.location.href = "../index.html";
+  });
+}
 
+async function loadEvents() {
+    try {
+        // Reference to the 'Events' collection
+        const eventsRef = collection(db, 'Events');
+        
+        // Fetch all documents from the 'Events' collection
+        const snapshot = await getDocs(eventsRef);
 
+        // Reference to the select element
+        const eventSelect = document.getElementById('modalEventSelect');
+        
+        // Clear any existing options in the select element
+        eventSelect.innerHTML = '';
 
+        // Loop through each event document and append an option to the select element
+        snapshot.forEach(doc => {
+            const eventId = doc.id; // Event document ID (e.g., Event1)
+            const eventName = doc.data().Name; // Event name from the document
 
+            // Create a new option element
+            const option = document.createElement('option');
+            option.value = eventId; // Set the value to the event ID
+            option.textContent = eventName; // Set the text content to the event name
 
-async function fetchTruckData() {
-    const productsContainer = document.querySelector(".Products");
-
-    if (!productsContainer) {
-        console.error("Products container not found");
-        return;
-    }
-
-    const truckCollections = ["10WheelerTrucks", "6WheelerTrucks"];
-    productsContainer.innerHTML = "";
-
-    for (const collectionName of truckCollections) {
-        const querySnapshot = await getDocs(collection(db, collectionName));
-
-        if (!querySnapshot.empty) {
-            let tableHTML = `
-                <h2>${collectionName}</h2>
-                <table border="1">
-                    <thead>
-                        <tr>
-                            <th>Height</th>
-                            <th>Length</th>
-                            <th>Remarks</th>
-                            <th>Temperature</th>
-                            <th>Tonnage</th>
-                            <th>Units</th>
-                            <th>Van Type</th>
-                            <th>Width</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-            `;
-
-            querySnapshot.forEach(doc => {
-                const data = doc.data();
-                tableHTML += `
-                    <tr>
-                        <td>${data.Height || 'N/A'}</td>
-                        <td>${data.Length || 'N/A'}</td>
-                        <td>${data.Remarks || 'N/A'}</td>
-                        <td>${data.Temperature || 'N/A'}</td>
-                        <td>${data.Tonnage || 'N/A'}</td>
-                        <td>${data.Units || 'N/A'}</td>
-                        <td>${data.VanType || 'N/A'}</td>
-                        <td>${data.Width || 'N/A'}</td>
-                    </tr>
-                `;
-            });
-
-            tableHTML += "</tbody></table>";
-            productsContainer.innerHTML += tableHTML;
-        } else {
-            productsContainer.innerHTML += `<h2>${collectionName}</h2><p>No data available.</p>`;
-        }
+            // Append the option to the select dropdown
+            eventSelect.appendChild(option);
+        });
+    } catch (error) {
+        console.error('Error loading events:', error);
     }
 }
 
-document.addEventListener("DOMContentLoaded", fetchTruckData);
+// Call the function to load events when the page is ready
+loadEvents();
