@@ -72,7 +72,7 @@
 
     <li class="nav-item">
       <a class="nav-link" data-bs-target="#components-nav" data-bs-toggle="collapse" href="#">
-          <i class="bi bi-menu-button-wide"></i><span>Event Manage</span><i class="bi bi-chevron-down ms-auto"></i>
+          <i class="bi bi-menu-button-wide"></i><span>Event Manager</span><i class="bi bi-chevron-down ms-auto"></i>
       </a>
       <ul id="components-nav" class="nav-content collapse" data-bs-parent="#sidebar-nav">
           <li>
@@ -99,6 +99,12 @@
 
     <li class="nav-heading">Pages</li>
 
+    <li class="nav-item">
+      <a class="nav-link collapsed" href="showEvents.html">
+        <i class="bi bi-people"></i>
+        <span>Event List</span>
+      </a>
+    </li>
     <li class="nav-item">
       <a class="nav-link collapsed" href="admin.html">
         <i class="bi bi-people"></i>
@@ -128,13 +134,16 @@
     </div><!-- End Page Title -->
     <div class="table-container" style="display: none;">
       <div style="text-align: right; padding-top: 15px;">
-          <input type="text" id="filterInput" placeholder="Filter by any column..." 
-                 style="width: 300px; padding: 5px; border-radius: 5px; border: 1px solid #aaa;">
-          <button style="padding: 5px 20px; border-radius: 5px; border: 1px solid #aaa; 
+        <button id="addEventBtn" style="padding: 5px 20px; border-radius: 5px; border: 1px solid #aaa; 
+                  background-color: #800000; color: white; cursor: pointer; display: none;"> 
+              + Add Event
+          </button>
+          <button id="addProductBtn" style="padding: 5px 20px; border-radius: 5px; border: 1px solid #aaa; 
                          background-color: #800000; color: white; cursor: pointer;"> 
               + Add Product
           </button>
       </div>
+      <div id="filterContainer" style="margin-bottom: 10px;"></div>
       <table id="myTable">
           <thead>
               <tr>
@@ -147,59 +156,6 @@
       </table>
   </div>
   
-  <script>
-      async function loadProducts(eventId) {
-          try {
-              console.log(`Fetching products for event: ${eventId}`);
-  
-              // Show table container when event is clicked
-              document.querySelector(".table-container").style.display = "block";
-  
-              const tableBody = document.querySelector("#myTable tbody");
-              if (!tableBody) {
-                  console.error("Table not found in the DOM!");
-                  return;
-              }
-  
-              tableBody.innerHTML = ""; // Clear existing products
-  
-              const productsRef = collection(db, `Events/${eventId}/Products`);
-              const productsSnapshot = await getDocs(productsRef);
-  
-              if (productsSnapshot.empty) {
-                  console.log("No products found for this event.");
-                  tableBody.innerHTML = "<tr><td colspan='3' style='text-align:center;'><i>No products available</i></td></tr>";
-                  return;
-              }
-  
-              productsSnapshot.forEach((productDoc) => {
-                  const productData = productDoc.data();
-                  console.log("Product found:", productData);
-  
-                  const description = productData.Description || "No description";
-                  const quantityRequired = productData.QuantityRequired || 0;
-  
-                  const row = document.createElement("tr");
-                  row.innerHTML = `
-                      <td>${description}</td>
-                      <td style="text-align: center;">${quantityRequired}</td>
-                      <td style="text-align: center;">
-                          <button class="update-btn" data-product-id="${productDoc.id}" 
-                                  style="padding: 5px 20px; border-radius: 5px; border: 1px solid #010101; 
-                                         background-color: #070085; color: white; cursor: pointer;">
-                              <i class="fas fa-edit"></i> Update
-                          </button>
-                      </td>
-                  `;
-  
-                  tableBody.appendChild(row);
-              });
-  
-          } catch (error) {
-              console.error("Error loading products:", error);
-          }
-      }
-  </script>
 
 
     <div class="container mt-4">
@@ -216,10 +172,6 @@
                       <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                   </div>
                   <div class="modal-body">
-                      <div class="mb-3">
-                          <label for="modalCompanyInput" class="form-label">Company:</label>
-                          <input type="text" class="form-control" id="modalCompanyInput">
-                      </div>
                       <div class="mb-3">
                           <label for="modalUsernameInput" class="form-label">Username:</label>
                           <input type="email" class="form-control" id="modalUsernameInput">
@@ -256,6 +208,126 @@
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
+    <!-- Add Product Modal -->
+<div class="modal fade" id="addProductModal" tabindex="-1" aria-labelledby="addProductModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+      <div class="modal-content">
+          <div class="modal-header">
+              <h5 class="modal-title" id="addProductModalLabel">Add New Product</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+              <div class="mb-3">
+                  <label for="productDescriptionInput" class="form-label">Description:</label>
+                  <input type="text" class="form-control" id="productDescriptionInput" placeholder="Enter product description">
+              </div>
+              <div class="mb-3">
+                  <label for="productQuantityInput" class="form-label">Quantity Required:</label>
+                  <input type="number" class="form-control" id="productQuantityInput" placeholder="Enter quantity required">
+              </div>
+          </div>
+          <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+              <button type="button" class="btn btn-primary" id="saveProductBtn">Save Product</button>
+          </div>
+      </div>
+  </div>
+</div>
+
+<div class="modal fade" id="updateProductModal" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Update Product</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <div class="mb-3">
+          <label for="updateProductDescription" class="form-label">Description:</label>
+          <input type="text" class="form-control" id="updateProductDescription">
+        </div>
+        <div class="mb-3">
+          <label for="updateProductQuantity" class="form-label">Quantity Required:</label>
+          <input type="number" class="form-control" id="updateProductQuantity">
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button id="deleteProductBtn" class="btn btn-danger">Delete</button>
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+        <button id="saveProductChangesBtn" class="btn btn-primary">Save Changes</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Confirm Delete Modal -->
+<div class="modal fade" id="confirmDeleteProductModal" tabindex="-1" aria-labelledby="confirmDeleteProductLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content rounded-3 shadow">
+      <div class="modal-header bg-danger text-white">
+        <h5 class="modal-title" id="confirmDeleteProductLabel">Confirm Delete</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        Are you sure you want to delete this product? This action cannot be undone.
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+        <button id="confirmDeleteProductBtn" type="button" class="btn btn-danger">Delete</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+ <!-- Add bid Modal -->
+<div class="modal fade" id="addBidModal" tabindex="-1" aria-labelledby="addBidModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content rounded-3 shadow">
+      <div class="modal-header bg-success text-white">
+        <h5 class="modal-title" id="addBidModalLabel">Add Bid</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <div class="mb-3">
+          <label for="companySelect" class="form-label">Select Company</label>
+          <select class="form-select" id="companySelect"></select>
+        </div>
+        <div class="mb-3">
+          <label for="bidAmountInput" class="form-label">Bid Amount</label>
+          <input type="number" class="form-control" id="bidAmountInput" placeholder="Enter bid amount">
+        </div>
+        <div class="mb-3">
+          <label for="quantityOfferedInput" class="form-label">Quantity Offered</label>
+          <input type="number" class="form-control" id="quantityOfferedInput" placeholder="Enter quantity offered">
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+        <button id="submitBidBtn" class="btn btn-success">Submit Bid</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Confirmation Delete Modal -->
+<div class="modal fade" id="confirmDeleteBidModal" tabindex="-1" aria-labelledby="confirmDeleteBidLabel" aria-hidden="true">
+  <div class="modal-dialog">
+      <div class="modal-content rounded-3 shadow">
+          <div class="modal-header bg-danger text-white">
+              <h5 class="modal-title" id="confirmDeleteBidLabel">Confirm Delete</h5>
+              <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+              Are you sure you want to delete this bid? This action cannot be undone.
+          </div>
+          <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+              <button id="confirmDeleteBidBtn" type="button" class="btn btn-danger">Delete</button>
+          </div>
+      </div>
+  </div>
+</div>
+
   </main>
 
   <!-- ======= Footer ======= -->
@@ -284,9 +356,7 @@
   <script type="module" src="../assets/js/firebase-config.js"></script>
 
 
-  <script type="module" src="../assets/js/admin/trucks.js"></script>
   <script type="module" src="../assets/js/vendor/account.js"></script>
-  <script type="module" src="../assets/js/admin/account.js"></script>
   <script type="module" src="../event.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
