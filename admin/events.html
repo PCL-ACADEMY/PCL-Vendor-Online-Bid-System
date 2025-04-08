@@ -73,7 +73,7 @@
 
       <li class="nav-item">
         <a class="nav-link" data-bs-target="#components-nav" data-bs-toggle="collapse" href="#">
-            <i class="bi bi-menu-button-wide"></i><span>Event Manage</span><i class="bi bi-chevron-down ms-auto"></i>
+            <i class="bi bi-menu-button-wide"></i><span>Event Manager</span><i class="bi bi-chevron-down ms-auto"></i>
         </a>
         <ul id="components-nav" class="nav-content collapse" data-bs-parent="#sidebar-nav">
             <li>
@@ -103,6 +103,12 @@
       <li class="nav-heading">Pages</li>
 
       <li class="nav-item">
+        <a class="nav-link collapsed" href="showEvents.html">
+          <i class="bi bi-people"></i>
+          <span>Event List</span>
+        </a>
+      </li>
+      <li class="nav-item">
         <a class="nav-link collapsed" href="admin.html">
           <i class="bi bi-people"></i>
           <span>Admin</span>
@@ -131,13 +137,16 @@
     </div><!-- End Page Title -->
     <div class="table-container" style="display: none;">
       <div style="text-align: right; padding-top: 15px;">
-          <input type="text" id="filterInput" placeholder="Filter by any column..." 
-                 style="width: 300px; padding: 5px; border-radius: 5px; border: 1px solid #aaa;">
-          <button style="padding: 5px 20px; border-radius: 5px; border: 1px solid #aaa; 
+        <button id="addEventBtn" style="padding: 5px 20px; border-radius: 5px; border: 1px solid #aaa; 
+                        background-color: #800000; color: white; cursor: pointer; display: none;"> 
+            + Add Event
+        </button>
+          <button id="addProductBtn" style="padding: 5px 20px; border-radius: 5px; border: 1px solid #aaa; 
                          background-color: #800000; color: white; cursor: pointer;"> 
               + Add Product
           </button>
       </div>
+      <div id="filterContainer" style="margin-bottom: 10px;"></div>
       <table id="myTable">
           <thead>
               <tr>
@@ -281,6 +290,7 @@
   <script type="module" src="../assets/js/admin/account.js"></script>
   <script type="module" src="../event.js"></script>
   <script type="module" src="../eventProductTable.js"></script>
+  <script type="module" src="../assets/js/script.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
 </body>

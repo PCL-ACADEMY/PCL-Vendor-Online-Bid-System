@@ -1,6 +1,6 @@
 // script.js
 import { db } from "./firebase-config.js";
-import { collection, getDocs, query, where } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-firestore.js";
+import { collection, getDocs, query, where, doc, updateDoc } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-firestore.js";
 const logoutBtn = document.getElementById('logoutBtn');
 const logoutBtnAdmin = document.getElementById('logoutBtnAdmin');
 
@@ -32,32 +32,47 @@ document.addEventListener("DOMContentLoaded", function () {
     
         try {
             // Check Company Account (Vendor)
-            const companyQuery = query(collection(db, "CompanyAccounts"), where("Username", "==", email), where("Password", "==", password));
+            const companyQuery = query(
+                collection(db, "CompanyAccounts"),
+                where("Username", "==", email),
+                where("Password", "==", password)
+            );
             const companySnapshot = await getDocs(companyQuery);
     
             if (!companySnapshot.empty) {
-                let companyDoc = companySnapshot.docs[0];
-                let data = companyDoc.data();
-    
+                const companyDoc = companySnapshot.docs[0];
+                const companyId = companyDoc.id;
+                const companyRef = doc(db, "CompanyAccounts", companyId);
+                const data = companyDoc.data();
+
                 if (data.Status === "Inactive") {
                     alert("Your account has been deactivated. Please contact support.");
                     return;
                 }
-    
+
+                // Set Activity to Online
+                await updateDoc(companyRef, {
+                    Activity: "Online"
+                });
+
                 alert("Vendor login successful!");
                 localStorage.setItem('userType', 'vendor');
                 localStorage.setItem('userEmail', email);
-                localStorage.setItem('userDocId', companyDoc.id);
+                localStorage.setItem('userDocId', companyId);
                 window.location.href = "vendor/vendorPage.html";
                 return;
             }
-    
+
             // Check Admin Account
-            const adminQuery = query(collection(db, "AdminAccounts"), where("Username", "==", email), where("Password", "==", password));
+            const adminQuery = query(
+                collection(db, "AdminAccounts"),
+                where("Username", "==", email),
+                where("Password", "==", password)
+            );
             const adminSnapshot = await getDocs(adminQuery);
-    
+
             if (!adminSnapshot.empty) {
-                let adminDoc = adminSnapshot.docs[0];
+                const adminDoc = adminSnapshot.docs[0];
     
                 alert("Admin login successful!");
                 localStorage.setItem('userType', 'admin');
@@ -66,7 +81,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 window.location.href = "admin/adminPage.html";
                 return;
             }
-    
+
             alert("Invalid username or password!");
     
         } catch (error) {
@@ -75,7 +90,7 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     }
 
-loginForm.addEventListener("submit", validateLogin);
+    loginForm.addEventListener("submit", validateLogin);
 });
 
 if (logoutBtn) {

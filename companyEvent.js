@@ -1,6 +1,31 @@
 import { db } from "./assets/js/firebase-config.js";
 import { collection, getDocs, getDoc, query, where, doc, updateDoc } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-firestore.js";
 
+window.addEventListener("pageshow", async function (event) {
+    const navType = window.performance.getEntriesByType("navigation")[0]?.type;
+
+    if (event.persisted || navType === "back_forward") {
+        const userType = localStorage.getItem("userType");
+        const userDocId = localStorage.getItem("userDocId");
+
+        if (userType === "vendor" && userDocId) {
+            const companyRef = doc(db, "CompanyAccounts", userDocId);
+
+            try {
+                await updateDoc(companyRef, {
+                    Activity: "Offline"
+                });
+                console.log("Activity updated to Offline");
+            } catch (error) {
+                console.error("Failed to update activity status:", error);
+            }
+        }
+
+        localStorage.clear();
+        window.location.href = "../index.html"; // optional redirect to login
+    }
+});
+
 const submitButton = document.querySelector("button");
 const timerDisplay = document.getElementById("timer");
 const quantityInput = document.querySelector("input[placeholder='Quantity']");
@@ -113,6 +138,32 @@ async function fetchEventData() {
 }
 
 
+// Function to display the modal with a custom message
+function showModal(message, callback) {
+    const modal = document.getElementById("errorModal");
+    const errorMessage = document.getElementById("errorMessage");
+    const confirmButton = document.getElementById("confirmError");
+    const cancelButton = document.getElementById("cancelError");
+
+    // Set the error message
+    errorMessage.textContent = message;
+
+    // Show the modal
+    modal.style.display = "flex";
+
+    // Confirm button action
+    confirmButton.onclick = () => {
+        callback(true); // Confirm callback
+        modal.style.display = "none"; // Hide modal
+    };
+
+    // Cancel button action
+    cancelButton.onclick = () => {
+        callback(false); // Cancel callback
+        modal.style.display = "none"; // Hide modal
+    };
+}
+
 // Event listener for bid updates
 submitButton.addEventListener("click", () => {
     const quantityInput = document.querySelector("input[placeholder='Quantity']");
@@ -120,24 +171,30 @@ submitButton.addEventListener("click", () => {
     const selectedProduct = document.querySelector("input[name='selectedProduct']:checked");
 
     if (!quantityInput.value || !amountInput.value || !selectedProduct) {
-        alert("Both Quantity and Amount fields are required, and a product must be selected.");
+        // Show modal for missing inputs
+        showModal("Both Quantity and Amount fields are required, and a product must be selected.", () => {});
         return;
     }
 
     const decrementAmount = parseFloat(amountInput.value);
     if (isNaN(decrementAmount) || decrementAmount < 3000) {
-        alert("Invalid input. The decrement amount must be at least 3000.");
+        // Show modal for invalid decrement amount
+        showModal("Invalid input. The decrement amount must be at least 3000.", () => {});
         return;
     }
 
-    // Display confirmation modal with dynamic message
-    modalMessage.innerText = `Are you sure you want to reduce your bid amount by ₱${decrementAmount.toLocaleString()}?`;
-    modal.style.display = "flex";
-
-    // Store inputs in dataset for later use
-    confirmBtn.dataset.quantity = quantityInput.value;
-    confirmBtn.dataset.amount = amountInput.value;
-    confirmBtn.dataset.productId = selectedProduct.value;
+    // Display confirmation modal with dynamic message for the bid confirmation
+    const modalMessage = `Are you sure you want to reduce your bid amount by ₱${decrementAmount.toLocaleString()}?`;
+    showModal(modalMessage, (confirmed) => {
+        if (confirmed) {
+            // If confirmed, proceed with further actions like submitting the bid
+            console.log("Bid confirmed with Quantity:", quantityInput.value, "Amount:", decrementAmount);
+            // Store the values in dataset for later use
+            confirmBtn.dataset.quantity = quantityInput.value;
+            confirmBtn.dataset.amount = amountInput.value;
+            confirmBtn.dataset.productId = selectedProduct.value;
+        }
+    });
 });
 
 // Handle confirmation

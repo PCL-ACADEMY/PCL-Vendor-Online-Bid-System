@@ -1,4 +1,4 @@
-import { collection, getDocs, query, where, doc, updateDoc, addDoc, setDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-firestore.js";
+import { collection, getDocs, query, where, doc, updateDoc, setDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-firestore.js";
 import { db } from "../firebase-config.js";
 
 async function displayAdminName() {
@@ -21,7 +21,7 @@ async function displayAdminName() {
     
     if (!querySnapshot.empty) {
       const docData = querySnapshot.docs[0].data();
-      const adminName = docData.name || adminEmail;
+      const adminName = docData.Name || adminEmail;
         
       document.getElementById("displayName").textContent = adminName;
     } else {
@@ -46,11 +46,9 @@ function createAdminTable() {
                 <h4 class="card-title">Admin Accounts</h4>
                 <button class="btn btn-success" onclick="showAddAdminModal()">Add Admin Account</button>
             </div>
-            <input type="text" id="admin-search" class="form-control mb-3" placeholder="Search by name or username..." oninput="filterTable(this.value)">
             <table class="table table-striped">
                 <thead>
                     <tr>
-                        <th>ID</th>
                         <th>Name</th>
                         <th>Username</th>
                         <th>Action</th>
@@ -61,67 +59,18 @@ function createAdminTable() {
                 </tbody>
             </table>
         </div>
-    </div>
+    </div>    
     
-    <!-- Admin Modal -->
-    <div class="modal fade" id="adminDetailsModal" tabindex="-1" aria-labelledby="modalTitle" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="modalTitle">Admin Details</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <div class="mb-3">
-                        <label for="modalNameInput" class="form-label">Name</label>
-                        <input type="text" class="form-control" id="modalNameInput" placeholder="Enter admin name">
-                    </div>
-                    <div class="mb-3">
-                        <label for="modalUsernameInput" class="form-label">Username (Email)</label>
-                        <input type="email" class="form-control" id="modalUsernameInput" placeholder="Enter admin email">
-                    </div>
-                    <div class="mb-3">
-                        <label for="modalPasswordInput" class="form-label">Password</label>
-                        <input type="password" class="form-control" id="modalPasswordInput" placeholder="Enter password">
-                        <small class="form-text text-muted">Leave blank to keep existing password when updating</small>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                    <button type="button" class="btn btn-danger" id="deleteAdminBtn" style="display: none;">Delete Account</button>
-                    <button type="button" class="btn btn-primary" id="saveAdminBtn">Save</button>
-                </div>
-            </div>
-        </div>
-    </div>
-    
-    <!-- Delete Confirmation Modal -->
-    <div class="modal fade" id="deleteConfirmModal" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">Confirm Delete</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <p>Are you sure you want to delete this admin account? This action cannot be undone.</p>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                    <button type="button" class="btn btn-danger" id="confirmDeleteBtn">Delete</button>
-                </div>
-            </div>
-        </div>
-    </div>
+
     `;
 }
 
 async function populateAdminTable() {
     try {
-        const adminRef = collection(db, "AdminAccounts"); // Ensure correct collection name
+        const adminRef = collection(db, "AdminAccounts");
         const adminSnapshot = await getDocs(adminRef);
 
-        let adminData = []; // Properly declare the array
+        adminData = []; 
 
         if (adminSnapshot.empty) {
             console.log("No admin accounts found");
@@ -133,9 +82,9 @@ async function populateAdminTable() {
             const data = doc.data();
             adminData.push({
                 id: doc.id, 
-                name: data.Name || "N/A", 
-                username: data.username || "N/A", 
-                password: data.password || "" 
+                Name: data.Name || "N/A", 
+                Username: data.Username || "N/A", 
+                Password: data.Password || "" 
             });
         });
 
@@ -166,9 +115,8 @@ function renderTable(data) {
     data.forEach((admin) => {
         tableHTML += `
             <tr>
-                <td>${admin.id}</td>
-                <td>${admin.name}</td>
-                <td>${admin.username}</td>
+                <td>${admin.Name}</td>
+                <td>${admin.Username}</td>
                 <td>
                     <button class="btn btn-primary" onclick="showAdminDetails('${admin.id}')">Update</button>
                 </td>
@@ -179,45 +127,47 @@ function renderTable(data) {
     tableBody.innerHTML = tableHTML;
 }
 
-function filterTable(searchText) {
-    if (!searchText.trim()) {
-        renderTable(adminData);
-        return;
-    }
-
-    const searchLower = searchText.toLowerCase();
-    const filteredData = adminData.filter(admin =>
-        admin.name.toLowerCase().includes(searchLower) ||
-        admin.username.toLowerCase().includes(searchLower)
-    );
-
-    renderTable(filteredData);
-}
-
-window.filterTable = filterTable;
+let pendingDeleteAdminId = null;
 
 window.showAdminDetails = function(docId) {
     currentAdminId = docId;
     const admin = adminData.find(a => a.id === docId);
-    
-    if (admin) {
-        document.getElementById("modalTitle").textContent = "Update Admin Account";
-        document.getElementById("modalNameInput").value = admin.name;
-        document.getElementById("modalUsernameInput").value = admin.username;
-        document.getElementById("modalPasswordInput").value = "";
-        
-        const saveAdminBtn = document.getElementById("saveAdminBtn");
-        saveAdminBtn.textContent = "Save Changes";
-        saveAdminBtn.onclick = saveAdminChanges;
-        
-        // Show delete button for update mode
-        const deleteAdminBtn = document.getElementById("deleteAdminBtn");
-        deleteAdminBtn.style.display = "block";
-        deleteAdminBtn.onclick = confirmDeleteAdmin;
 
-        const modal = new bootstrap.Modal(document.getElementById("adminDetailsModal"));
-        modal.show();
+    if (!admin) {
+        console.error("Admin data not found for ID:", docId);
+        return;
     }
+
+    document.getElementById("modalTitle").textContent = "Update Admin Account";
+    document.getElementById("modalNameInput").value = admin.Name;
+    document.getElementById("modalUsernameInput").value = admin.Username;
+    document.getElementById("modalPasswordInput").value = "";
+
+    const saveAdminBtn = document.getElementById("saveAdminBtn");
+    saveAdminBtn.textContent = "Save Changes";
+    saveAdminBtn.onclick = function() {
+        saveAdminChanges(docId);
+    };
+
+    const deleteAdminBtn = document.getElementById("deleteAdminBtn");
+    if (deleteAdminBtn) {
+        deleteAdminBtn.style.display = "block"; // <-- This reveals it
+        deleteAdminBtn.onclick = function () {
+            pendingDeleteAdminId = docId;
+            const confirmModal = new bootstrap.Modal(document.getElementById("confirmDeleteAdminModal"));
+            confirmModal.show();
+        };
+    }
+
+
+    const modalElement = document.getElementById("adminDetailsModal");
+    if (!modalElement) {
+        console.error("Modal element not found in DOM");
+        return;
+    }
+
+    const modal = new bootstrap.Modal(modalElement);
+    modal.show();
 };
 
 window.saveAdminChanges = async function() {
@@ -234,12 +184,12 @@ window.saveAdminChanges = async function() {
         }
 
         const updateData = {
-            name: name,
-            username: username
+            Name: name,
+            Username: username
         };
 
         if (password) {
-            updateData.password = password;
+            updateData.Password = password;
         }
 
         const adminRef = doc(db, "AdminAccounts", currentAdminId);
@@ -249,8 +199,8 @@ window.saveAdminChanges = async function() {
 
         const adminIndex = adminData.findIndex(a => a.id === currentAdminId);
         if (adminIndex !== -1) {
-            adminData[adminIndex].name = name;
-            adminData[adminIndex].username = username;
+            adminData[adminIndex].Name = name;
+            adminData[adminIndex].Username = username;
             renderTable(adminData);
         }
 
@@ -264,55 +214,35 @@ window.saveAdminChanges = async function() {
     }
 };
 
-window.confirmDeleteAdmin = function() {
-    // Close the admin details modal
-    const detailsModal = bootstrap.Modal.getInstance(document.getElementById("adminDetailsModal"));
-    if (detailsModal) detailsModal.hide();
-    
-    // Show confirmation modal
-    document.getElementById("confirmDeleteBtn").onclick = deleteAdmin;
-    const confirmModal = new bootstrap.Modal(document.getElementById("deleteConfirmModal"));
-    confirmModal.show();
-};
+const deleteAdminBtn = document.getElementById("deleteAdminBtn");
+if (deleteAdminBtn) {
+    deleteAdminBtn.style.display = "block";
+    deleteAdminBtn.onclick = function () {
+        pendingDeleteAdminId = docId;
+        const confirmModal = new bootstrap.Modal(document.getElementById("confirmDeleteAdminModal"));
+        confirmModal.show();
+    };
+}
 
-window.deleteAdmin = async function() {
-    if (!currentAdminId) return;
-    
-    try {
-        // Get current admin's email
-        const currentAdminEmail = localStorage.getItem('adminEmail');
-        const adminToDelete = adminData.find(a => a.id === currentAdminId);
-        
-        // Check if admin is trying to delete their own account
-        if (adminToDelete && adminToDelete.username === currentAdminEmail) {
-            alert("You cannot delete your own account while logged in.");
-            
-            // Close the confirmation modal
-            const confirmModal = bootstrap.Modal.getInstance(document.getElementById("deleteConfirmModal"));
-            if (confirmModal) confirmModal.hide();
-            
-            return;
-        }
-        
-        // Delete the admin document
-        await deleteDoc(doc(db, "AdminAccounts", currentAdminId));
-        console.log("Admin account deleted successfully");
-        
-        // Update local data
-        adminData = adminData.filter(admin => admin.id !== currentAdminId);
-        renderTable(adminData);
-        
-        // Close the confirmation modal
-        const confirmModal = bootstrap.Modal.getInstance(document.getElementById("deleteConfirmModal"));
-        if (confirmModal) confirmModal.hide();
-        
-        alert("Admin account deleted successfully");
-        
-    } catch (error) {
-        console.error("Error deleting admin account:", error);
-        alert("Failed to delete admin account. Please try again.");
+document.getElementById("confirmDeleteAdminBtn").onclick = function () {
+    if (pendingDeleteAdminId) {
+        deleteAdminAccount(pendingDeleteAdminId);
+        pendingDeleteAdminId = null;
     }
 };
+
+function deleteAdminAccount(docId) {
+    const adminRef = doc(db, "AdminAccounts", docId);
+    deleteDoc(adminRef)
+        .then(() => {
+            console.log("Admin successfully deleted");
+            location.reload();
+        })
+        .catch((error) => {
+            console.error("Error deleting admin:", error);
+        });
+}
+
 
 // Function to get the next admin number
 async function getNextAdminNumber() {
@@ -321,7 +251,7 @@ async function getNextAdminNumber() {
         const adminSnapshot = await getDocs(adminRef);
         
         if (adminSnapshot.empty) {
-            return 1; // If no admins exist, start with admin1
+            return 1; 
         }
         
         // Find admin IDs that match the pattern "admin#"
@@ -336,7 +266,7 @@ async function getNextAdminNumber() {
         });
         
         if (adminNumbers.length === 0) {
-            return 1; // If no admins with the naming pattern exist, start with admin1
+            return 1; 
         }
         
         // Get the max number and add 1
@@ -344,7 +274,7 @@ async function getNextAdminNumber() {
         return maxNumber + 1;
     } catch (error) {
         console.error("Error getting next admin number:", error);
-        return Date.now(); // Fallback to timestamp if there's an error
+        return Date.now(); 
     }
 }
 
@@ -353,13 +283,11 @@ window.showAddAdminModal = function() {
     document.getElementById("modalNameInput").value = "";
     document.getElementById("modalUsernameInput").value = "";
     document.getElementById("modalPasswordInput").value = "";
-    
+    document.getElementById("deleteAdminBtn").style.display = "none";
+
     const saveAdminBtn = document.getElementById("saveAdminBtn");
     saveAdminBtn.textContent = "Add Account";
     saveAdminBtn.onclick = addNewAdmin;
-    
-    // Hide delete button for add mode
-    document.getElementById("deleteAdminBtn").style.display = "none";
 
     const modal = new bootstrap.Modal(document.getElementById("adminDetailsModal"));
     modal.show();
@@ -378,7 +306,7 @@ window.addNewAdmin = async function() {
 
         // Check if username (email) already exists
         const adminRef = collection(db, "AdminAccounts");
-        const q = query(adminRef, where("username", "==", username));
+        const q = query(adminRef, where("Username", "==", username));
         const querySnapshot = await getDocs(q);
         
         if (!querySnapshot.empty) {
@@ -392,9 +320,9 @@ window.addNewAdmin = async function() {
 
         // Create new admin account with custom ID
         const newAdmin = {
-            name: name,
-            username: username,
-            password: password
+            Name: name,
+            Username: username,
+            Password: password
         };
 
         // Use setDoc instead of addDoc to specify the document ID
@@ -404,12 +332,12 @@ window.addNewAdmin = async function() {
         // Update the local data and refresh the table
         adminData.push({
             id: docId,
-            name: name,
-            username: username,
-            password: password
+            Name: name,
+            Username: username,
+            Password: password
         });
         
-        renderTable(adminData);
+        populateAdminTable();
 
         // Close the modal
         const modalElement = document.getElementById("adminDetailsModal");
@@ -428,8 +356,6 @@ window.showAdminDetails = showAdminDetails;
 window.saveAdminChanges = saveAdminChanges;
 window.showAddAdminModal = showAddAdminModal;
 window.addNewAdmin = addNewAdmin;
-window.confirmDeleteAdmin = confirmDeleteAdmin;
-window.deleteAdmin = deleteAdmin;
 
 document.addEventListener("DOMContentLoaded", () => {
     createAdminTable();

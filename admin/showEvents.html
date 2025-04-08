@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta content="width=device-width, initial-scale=1.0" name="viewport">
+
+  <title>Dashboard - Producers Connection Logistics Inc.</title>
+  <meta content="" name="description">
+  <meta content="" name="keywords">
+
+  <!-- Favicons -->
+  <link href="../assets/img/pcl.png" rel="icon">
+  <link href="../assetsAd/img/apple-touch-icon.png" rel="apple-touch-icon">
+
+  <!-- Google Fonts -->
+  <link href="https://fonts.gstatic.com" rel="preconnect">
+  <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,300i,400,400i,600,600i,700,700i|Nunito:300,300i,400,400i,600,600i,700,700i|Poppins:300,300i,400,400i,500,500i,600,600i,700,700i" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+  <!-- Vendor CSS Files -->
+  <link href="../assetsAd/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+  <link href="../assetsAd/vendor/bootstrap-icons/bootstrap-icons.css" rel="stylesheet">
+  <link href="../assetsAd/vendor/boxicons/css/boxicons.min.css" rel="stylesheet">
+  <link href="../assetsAd/vendor/quill/quill.snow.css" rel="stylesheet">
+  <link href="../assetsAd/vendor/quill/quill.bubble.css" rel="stylesheet">
+  <link href="../assetsAd/vendor/remixicon/remixicon.css" rel="stylesheet">
+  <link href="../assetsAd/vendor/simple-datatables/style.css" rel="stylesheet">
+
+  <!-- Template Main CSS File -->
+  <link href="../assetsAd/css/style1.css" rel="stylesheet">
+
+</head>
+
+<body>
+<!-- ======= Header ======= -->
+<header id="header" class="header fixed-top d-flex align-items-center">
+  <div class="d-flex align-items-center justify-content-between">
+    <a href="index.html" class="logo d-flex align-items-center">
+      <img src="../assets/img/pcl.png" alt="">
+      <span class="d-none d-lg-block">ProcureX PCL Inc.</span>
+    </a>
+    <i class="bi bi-list toggle-sidebar-btn"></i>
+  </div>
+  <nav class="header-nav ms-auto">
+    <ul class="d-flex align-items-center">
+
+      <li class="nav-item d-block d-lg-none">
+        <a class="nav-link nav-icon search-bar-toggle " href="#">
+          <i class="bi bi-search"></i>
+        </a>
+      </li>
+      <li class="nav-item dropdown pe-3">
+        <a class="nav-link nav-profile d-flex align-items-center pe-0" href="#" data-bs-toggle="dropdown">
+          <span id="displayName" class="d-none d-md-block ps-2"></span> | <span id="logoutBtnAdmin">Logout</span>
+        </a>
+      </li>
+    </ul>
+  </nav>
+</header>
+<!-- ======= Sidebar ======= -->
+<aside id="sidebar" class="sidebar">
+
+  <ul class="sidebar-nav" id="sidebar-nav">
+
+    <li class="nav-item">
+      <a class="nav-link " href="adminPage.html">
+        <i class="bi bi-grid"></i>
+        <span>Dashboard</span>
+      </a>
+    </li>
+
+    <li class="nav-item">
+      <a class="nav-link" data-bs-target="#components-nav" data-bs-toggle="collapse" href="#">
+          <i class="bi bi-menu-button-wide"></i><span>Event Manager</span><i class="bi bi-chevron-down ms-auto"></i>
+      </a>
+      <ul id="components-nav" class="nav-content collapse" data-bs-parent="#sidebar-nav">
+          <li>
+              <ul id="event-list">
+                  <!-- Events will be dynamically inserted here -->
+              </ul>
+          </li>
+      </ul>
+  </li>
+
+
+  <li class="nav-item">
+    <a class="nav-link collapsed" data-bs-target="#forms-nav" data-bs-toggle="collapse" href="#">
+        <i class="bi bi-journal-text"></i><span>Bidding Records</span><i class="bi bi-chevron-down ms-auto"></i>
+    </a>
+    <ul id="forms-nav" class="nav-content collapse " data-bs-parent="#sidebar-nav">
+        <li>
+            <ul id="bidding-records-list">
+                <!-- Events will be dynamically inserted here -->
+            </ul>
+        </li>
+    </ul>
+</li>    
+
+    <li class="nav-heading">Pages</li>
+
+    <li class="nav-item">
+      <a class="nav-link collapsed" href="showEvents.html">
+        <i class="bi bi-people"></i>
+        <span>Event List</span>
+      </a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link collapsed" href="admin.html">
+        <i class="bi bi-people"></i>
+        <span>Admin</span>
+      </a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link collapsed" href="Vendor.html">
+        <i class="bi bi-people"></i>
+        <span>Vendor</span>
+      </a>
+    </li>
+  </ul>
+
+</aside><!-- End Sidebar-->
+
+  <main id="main" class="main">
+
+    <div class="pagetitle">
+      <h1>Events</h1>
+      <nav>
+        <ol class="breadcrumb">
+          <li class="breadcrumb-item"><a href="index.html">Home</a></li>
+          <li class="breadcrumb-item active">Events</li>
+        </ol>
+      </nav>
+    </div><!-- End Page Title -->
+
+    <div class="table-container" style="display: none;">
+      <div style="text-align: right; padding-top: 15px;">
+      <button id="addEventBtn" style="padding: 5px 20px; border-radius: 5px; border: 1px solid #aaa; 
+              background-color: #800000; color: white; cursor: pointer;"> 
+          + Add Event
+      </button>
+      <button id="addProductBtn" style="padding: 5px 20px; border-radius: 5px; border: 1px solid #aaa; 
+              background-color: #800000; color: white; cursor: pointer;"> 
+          + Add Product
+      </button>
+      </div>
+      <div id="filterContainer" style="margin-bottom: 10px;"></div>
+      <table id="myTable">
+          <thead>
+              <tr>
+                  <th style="width: 20%;">Event Name</th>
+                  <th style="width: 10%; text-align: center;">Start Time</th>
+                  <th style="width: 10%; text-align: center;">End Time</th>
+                  <th style="width: 5%; text-align: center;">Action</th>
+              </tr>
+          </thead>
+          <tbody></tbody> <!-- JavaScript will populate this -->
+      </table>
+  </div>
+  
+  <!-- Add Event Modal -->
+<div id="addEventModal" class="modal" style="display: none; position: fixed; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.5); justify-content: center; align-items: center;">
+    <div class="modal-content" style="background: white; padding: 20px; border-radius: 8px;  width: 400px; box-shadow: 0px 4px 6px rgba(0,0,0,0.1);">
+        <h2 style="font-weight: bold; text-align: center;">Add New Event</h2>
+        <p>Event Name</p>
+        <input type="text" id="eventName" placeholder="Event Name" style="width: 90%; padding: 8px; margin-bottom: 10px; border-radius: 5px; border: 1px solid #aaa;">
+        <p>Start TIme</p>
+        <input type="datetime-local" id="startTime" style="width: 90%; padding: 8px; margin-bottom: 10px; border-radius: 5px; border: 1px solid #aaa;">
+        <p>End TIme</p>
+        <input type="datetime-local" id="endTime" style="width: 90%; padding: 8px; margin-bottom: 10px; border-radius: 5px; border: 1px solid #aaa;">
+        <br>
+        <button id="saveEvent" style="padding: 10px 15px; border: none; cursor: pointer; border-radius: 4px; margin: 5px; background: #28a745; color: white;">Save</button>
+        <button id="closeModal" style="padding: 10px 15px; border: none; cursor: pointer; border-radius: 4px; margin: 5px; background: #dc3545; color: white;">Close</button>
+    </div>
+</div>
+
+
+  <!-- Edit Event Modal -->
+<div id="editEventModal" class="modal" style="display: none; position: fixed; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.5); justify-content: center; align-items: center;">
+    <div class="modal-content" style="background: white; padding: 20px; border-radius: 8px; width: 400px; box-shadow: 0px 4px 6px rgba(0,0,0,0.1);">
+        <h2 style="font-weight: bold; text-align: center;">Edit Event</h2>
+        <p>Event Name</p>
+        <input type="text" id="editEventName" placeholder="Event Name" style="width: 90%; padding: 8px; margin-bottom: 10px; border-radius: 5px; border: 1px solid #aaa;">
+        <p>Start Time</p>
+        <input type="datetime-local" id="editStartTime" style="width: 90%; padding: 8px; margin-bottom: 10px; border-radius: 5px; border: 1px solid #aaa;">
+        <p>End Time</p>
+        <input type="datetime-local" id="editEndTime" style="width: 90%; padding: 8px; margin-bottom: 10px; border-radius: 5px; border: 1px solid #aaa;">
+        <br>
+        <button id="updateEvent" style="padding: 10px 15px; border: none; cursor: pointer; border-radius: 4px; margin: 5px; background: #28a745; color: white;">Update</button>
+        <button id="closeEditModal" style="padding: 10px 15px; border: none; cursor: pointer; border-radius: 4px; margin: 5px; background: #dc3545; color: white;">Close</button>
+    </div>
+</div>
+
+  <!-- Add Product Modal -->
+  <div class="modal fade" id="addProductModal" tabindex="-1" aria-labelledby="addProductModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addProductModalLabel">Add New Product</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="mb-3">
+                    <label for="productDescriptionInput" class="form-label">Description:</label>
+                    <input type="text" class="form-control" id="productDescriptionInput" placeholder="Enter product description">
+                </div>
+                <div class="mb-3">
+                    <label for="productQuantityInput" class="form-label">Quantity Required:</label>
+                    <input type="number" class="form-control" id="productQuantityInput" placeholder="Enter quantity required">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" id="saveProductBtn">Save Product</button>
+            </div>
+        </div>
+    </div>
+  </div>
+  
+  <div class="modal fade" id="updateProductModal" tabindex="-1">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Update Product</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <div class="mb-3">
+            <label for="updateProductDescription" class="form-label">Description:</label>
+            <input type="text" class="form-control" id="updateProductDescription">
+          </div>
+          <div class="mb-3">
+            <label for="updateProductQuantity" class="form-label">Quantity Required:</label>
+            <input type="number" class="form-control" id="updateProductQuantity">
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button id="deleteProductBtn" class="btn btn-danger">Delete</button>
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+          <button id="saveProductChangesBtn" class="btn btn-primary">Save Changes</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Confirm Delete Modal -->
+  <div class="modal fade" id="confirmDeleteProductModal" tabindex="-1" aria-labelledby="confirmDeleteProductLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content rounded-3 shadow">
+        <div class="modal-header bg-danger text-white">
+          <h5 class="modal-title" id="confirmDeleteProductLabel">Confirm Delete</h5>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          Are you sure you want to delete this product? This action cannot be undone.
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+          <button id="confirmDeleteProductBtn" type="button" class="btn btn-danger">Delete</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+   <!-- Add bid Modal -->
+  <div class="modal fade" id="addBidModal" tabindex="-1" aria-labelledby="addBidModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content rounded-3 shadow">
+        <div class="modal-header bg-success text-white">
+          <h5 class="modal-title" id="addBidModalLabel">Add Bid</h5>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <div class="mb-3">
+            <label for="companySelect" class="form-label">Select Company</label>
+            <select class="form-select" id="companySelect"></select>
+          </div>
+          <div class="mb-3">
+            <label for="bidAmountInput" class="form-label">Bid Amount</label>
+            <input type="number" class="form-control" id="bidAmountInput" placeholder="Enter bid amount">
+          </div>
+          <div class="mb-3">
+            <label for="quantityOfferedInput" class="form-label">Quantity Offered</label>
+            <input type="number" class="form-control" id="quantityOfferedInput" placeholder="Enter quantity offered">
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+          <button id="submitBidBtn" class="btn btn-success">Submit Bid</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Confirmation Delete Modal -->
+  <div class="modal fade" id="confirmDeleteBidModal" tabindex="-1" aria-labelledby="confirmDeleteBidLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content rounded-3 shadow">
+            <div class="modal-header bg-danger text-white">
+                <h5 class="modal-title" id="confirmDeleteBidLabel">Confirm Delete</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                Are you sure you want to delete this bid? This action cannot be undone.
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button id="confirmDeleteBidBtn" type="button" class="btn btn-danger">Delete</button>
+            </div>
+        </div>
+    </div>
+  </div>
+  
+  </main>
+
+  <!-- ======= Footer ======= -->
+  <footer id="footer" class="footer">
+    <div class="credits">
+      Designed by <a href="#">Producers Connection Logistics Inc.</a>
+    </div>
+  </footer><!-- End Footer -->
+
+  <a href="#" class="back-to-top d-flex align-items-center justify-content-center"><i class="bi bi-arrow-up-short"></i></a>
+
+  <!-- Vendor JS Files -->
+  <script src="../assetsAd/vendor/apexcharts/apexcharts.min.js"></script>
+  <script src="../assetsAd/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+  <script src="../assetsAd/vendor/chart.js/chart.umd.js"></script>
+  <script src="../assetsAd/vendor/echarts/echarts.min.js"></script>
+  <script src="../assetsAd/vendor/quill/quill.js"></script>
+  <script src="../assetsAd/vendor/simple-datatables/simple-datatables.js"></script>
+  <script src="../assetsAd/vendor/tinymce/tinymce.min.js"></script>
+  <script src="../assetsAd/vendor/php-email-form/validate.js"></script>
+
+  
+
+  <!-- Template Main JS File -->
+  <script src="../assetsAd/js/main.js"></script>
+  <script type="module" src="../assets/js/admin/account.js"></script>
+  <script type="module" src="../event.js"></script>
+  <script type="module" src="../assets/js/admin/showEvents.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+</body>
+
+</html>
