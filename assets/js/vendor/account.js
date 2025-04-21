@@ -380,7 +380,7 @@ window.deleteVendor = async function() {
         const confirmModal = bootstrap.Modal.getInstance(document.getElementById("deleteConfirmModal"));
         if (confirmModal) confirmModal.hide();
         
-        alert("Vendor account deleted successfully");
+        populateVendorTable()
         
     } catch (error) {
         console.error("Error deleting vendor account:", error);
