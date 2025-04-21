@@ -201,5 +201,31 @@ document.getElementById("closeEditModal").addEventListener("click", () => {
     document.getElementById("editEventModal").style.display = "none";
 });
 
+let selectedEventIdToDelete = null;
 
+document.getElementById("deleteEvent").addEventListener("click", () => {
+    const eventId = document.getElementById("updateEvent").getAttribute("data-event-id");
+    selectedEventIdToDelete = eventId;
 
+    const modal = new bootstrap.Modal(document.getElementById("confirmDeleteProductModal"));
+    modal.show();
+});
+
+document.getElementById("confirmDeleteProductBtn").addEventListener("click", async () => {
+    if (!selectedEventIdToDelete) return;
+
+    try {
+        await deleteDoc(doc(db, "Events", selectedEventIdToDelete));
+        
+        selectedEventIdToDelete = null;
+        const confirmModal = bootstrap.Modal.getInstance(document.getElementById("confirmDeleteProductModal"));
+        confirmModal.hide();
+
+        document.getElementById("editEventModal").style.display = "none";
+
+        populateEventTable();
+    } catch (error) {
+        console.error("Error deleting event:", error);
+        alert("Failed to delete event.");
+    }
+});
