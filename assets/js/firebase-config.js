@@ -23,3 +23,30 @@ const app = initializeApp(firebaseConfig);
 const db = getFirestore (app);
 
 export { db }
+
+// Comment all when testing
+document.addEventListener("contextmenu", e => e.preventDefault());
+
+document.addEventListener("keydown", function (e) {
+  const key = e.key.toUpperCase();
+
+  if (
+      e.ctrlKey && (
+          key === 'U' || 
+          key === 'S' ||  
+          key === 'C' ||  
+          key === 'A' ||  
+          key === 'P' ||  
+          key === 'F'     
+      )
+  ) {
+      e.preventDefault();
+  }
+
+  if (
+      key === 'F12' ||
+      (e.ctrlKey && e.shiftKey && (key === 'I' || key === 'J' || key === 'C'))
+  ) {
+      e.preventDefault();
+  }
+});

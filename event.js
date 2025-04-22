@@ -3,17 +3,21 @@ import { db } from "./assets/js/firebase-config.js";
 
 document.addEventListener("DOMContentLoaded", () => {
     const eventManageBtn = document.querySelector("[data-bs-target='#components-nav']");
-    const eventList = document.getElementById("event-list");
+    const eventCollapseInstance = new bootstrap.Collapse('#components-nav', { toggle: false });
 
-    if (!eventManageBtn || !eventList) {
-        console.error("Event Manage button or event list not found!");
-        return;
-    }
+    const biddingRecordsBtn = document.querySelector("[data-bs-target='#forms-nav']");
+    const biddingCollapseInstance = new bootstrap.Collapse('#forms-nav', { toggle: false });
 
-    // When "Event Manage" is clicked, load events
-    eventManageBtn.addEventListener("click", async () => {
-        console.log("Event Manage clicked! Fetching events...");
+    eventManageBtn.addEventListener("click", async (e) => {
+        e.preventDefault();
+        eventCollapseInstance.toggle();
         await loadEvents();
+    });
+
+    biddingRecordsBtn.addEventListener("click", async (e) => {
+        e.preventDefault();
+        biddingCollapseInstance.toggle();
+        await loadBiddingRecords();
     });
 });
 
@@ -365,18 +369,7 @@ document.getElementById("submitBidBtn").addEventListener("click", async () => {
 
 
 document.addEventListener("DOMContentLoaded", () => {
-    const biddingRecordsBtn = document.querySelector("[data-bs-target='#forms-nav']");
-    const biddingList = document.getElementById("bidding-records-list");
 
-    if (!biddingRecordsBtn || !biddingList) {
-        console.error("Bidding Records button or list not found!");
-        return;
-    }
-
-    biddingRecordsBtn.addEventListener("click", async () => {
-        console.log("Bidding Records clicked! Fetching events...");
-        await loadBiddingRecords();
-    });
 });
 
 async function loadBiddingRecords() {
