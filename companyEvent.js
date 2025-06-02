@@ -104,12 +104,12 @@ async function fetchEventData() {
 
             if (!bidsSnapshot.empty) {
                 // Increment Rank 1 = Highest Bid
-                const sortedBids = bidsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }))
-                    .sort((a, b) => b.BidAmount - a.BidAmount); // Descending order
+                // const sortedBids = bidsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }))
+                //     .sort((a, b) => b.BidAmount - a.BidAmount); // Descending order
 
                 // Decrement Rank 1 = Lowest Bid
-                // const sortedBids = bidsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }))
-                //     .sort((a, b) => a.BidAmount - b.BidAmount); // Ascending order
+                const sortedBids = bidsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }))
+                    .sort((a, b) => a.BidAmount - b.BidAmount); // Ascending order
 
                 sortedBids.forEach((bid, index) => {
                     const bidDocRef = doc(db, `Events/${eventId}/Products/${productId}/Bids`, bid.id);
@@ -272,10 +272,10 @@ confirmBtn.addEventListener("click", async () => {
             const bidData = bidDoc.data();
 
             // Increment
-            const newBidAmount = (bidData.BidAmount || 0) + amountChange;
+            // const newBidAmount = (bidData.BidAmount || 0) + amountChange;
 
             // Decrement
-            // const newBidAmount = Math.max((bidData.BidAmount || 0) - amountChange, 0);
+            const newBidAmount = Math.max((bidData.BidAmount || 0) - amountChange, 0);
 
             // Check for tie 
             const allBidsSnapshot = await getDocs(bidsRef);
@@ -397,12 +397,12 @@ async function fetchLatestTableData() {
 
             if (!bidsSnapshot.empty) {
                 // Increment Rank 1 = Highest Bid
-                const sortedBids = bidsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }))
-                    .sort((a, b) => b.BidAmount - a.BidAmount); // Descending order
+                // const sortedBids = bidsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }))
+                //     .sort((a, b) => b.BidAmount - a.BidAmount); // Descending order
 
                 // Decrement Rank 1 = Lowest Bid
-                // const sortedBids = bidsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }))
-                //     .sort((a, b) => a.BidAmount - b.BidAmount); // Ascending order
+                const sortedBids = bidsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }))
+                    .sort((a, b) => a.BidAmount - b.BidAmount); // Ascending order
 
                 sortedBids.forEach((bid, index) => {
                     const bidDocRef = doc(db, `Events/${eventId}/Products/${productId}/Bids`, bid.id);
