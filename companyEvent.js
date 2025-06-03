@@ -188,8 +188,13 @@ submitButton.addEventListener("click", () => {
     }
 
     const incrementAmount = parseFloat(amountInput.value);
-    if (isNaN(incrementAmount) || incrementAmount < 300) {
-        showModal("error", "Invalid input. The increment amount must be at least 300.", () => {});
+    // 
+    // if (isNaN(incrementAmount) || incrementAmount < 1000) {
+    //     showModal("error", "Invalid input. The increment amount must be at least 300.", () => {});
+    //     return;
+    // }
+    if (isNaN(incrementAmount) || incrementAmount < 1000) {
+        showModal("error", "Invalid input. The decrement amount must be at least 1000.", () => {});
         return;
     }
 
@@ -316,7 +321,7 @@ confirmBtn.addEventListener("click", async () => {
             await Promise.all(updatePromises);
 
             const finalBidsSnapshot = await getDocs(bidsRef);
-            
+
             //  Sort display to match (highest bid first)
             // const finalBids = finalBidsSnapshot.docs.map(doc => ({
             //     id: doc.id,
