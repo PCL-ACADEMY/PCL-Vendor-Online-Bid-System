@@ -193,20 +193,8 @@ submitButton.addEventListener("click", () => {
         return;
     }
 
-    const modalMessage = `Are you sure you want to increase your bid amount by ₱${incrementAmount.toLocaleString()}?`;
-    showModal("confirmation", modalMessage, (confirmed) => {
-        if (confirmed) {
-            pendingBidData = {
-                quantity: quantityInput.value,
-                amount: amountInput.value,
-                productId: selectedProduct.value
-            };
-            confirmBtn.click();
-        }
-        
-
-    // Decrement Logic (commented out)
-    // const modalMessage = `Are you sure you want to decrease your bid amount by ₱${incrementAmount.toLocaleString()}?`;
+    // Incement Logic
+    // const modalMessage = `Are you sure you want to increase your bid amount by ₱${incrementAmount.toLocaleString()}?`;
     // showModal("confirmation", modalMessage, (confirmed) => {
     //     if (confirmed) {
     //         pendingBidData = {
@@ -214,8 +202,21 @@ submitButton.addEventListener("click", () => {
     //             amount: amountInput.value,
     //             productId: selectedProduct.value
     //         };
-    //         confirmBtn.click(); // Manually trigger the confirmation handler
+    //         confirmBtn.click();
     //     }
+        
+
+    // Decrement Logic
+    const modalMessage = `Are you sure you want to decrease your bid amount by ₱${incrementAmount.toLocaleString()}?`;
+    showModal("confirmation", modalMessage, (confirmed) => {
+        if (confirmed) {
+            pendingBidData = {
+                quantity: quantityInput.value,
+                amount: amountInput.value,
+                productId: selectedProduct.value
+            };
+            confirmBtn.click(); // Manually trigger the confirmation handler
+        }
     });
 });
 
@@ -294,18 +295,18 @@ confirmBtn.addEventListener("click", async () => {
                 BidAmount: newBidAmount
             });
 
-            //  Ranking (rank 1 = highest bid)
             const updatedBidsSnapshot = await getDocs(bidsRef);
-            const updatedBids = updatedBidsSnapshot.docs.map(doc => ({
-                id: doc.id,
-                ...doc.data()
-            })).sort((a, b) => b.BidAmount - a.BidAmount); // Descending order
-
-            // Ranking (rank 1 = lowest bid)
+            //  Ranking (rank 1 = highest bid)
             // const updatedBids = updatedBidsSnapshot.docs.map(doc => ({
             //     id: doc.id,
             //     ...doc.data()
-            // })).sort((a, b) => a.BidAmount - b.BidAmount); // Ascending order
+            // })).sort((a, b) => b.BidAmount - a.BidAmount); // Descending order
+
+            // Ranking (rank 1 = lowest bid)
+            const updatedBids = updatedBidsSnapshot.docs.map(doc => ({
+                id: doc.id,
+                ...doc.data()
+            })).sort((a, b) => a.BidAmount - b.BidAmount); // Ascending order
 
             const updatePromises = updatedBids.map((bid, index) => {
                 const bidDocRef = doc(db, `Events/${eventId}/Products/${productId}/Bids`, bid.id);
