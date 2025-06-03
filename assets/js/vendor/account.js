@@ -265,31 +265,45 @@ function renderTable() {
     tableBody.innerHTML = tableHTML;
 }
 
-window.showVendorDetails = function(docId) {
+window.showVendorDetails = async function (docId) {
     currentVendorId = docId;
 
-    // Reference to the vendor document
     const vendorRef = doc(db, "CompanyAccounts", docId);
-    
-    // Get the document from Firestore
-    getDoc(vendorRef).then((docSnap) => {
+
+    try {
+        const docSnap = await getDoc(vendorRef);
+
         if (docSnap.exists()) {
             const vendor = docSnap.data();
-            
-            // Populate the modal with vendor data
+
+            // Populate modal fields
             document.getElementById("modalTitle").textContent = "Update Vendor Account";
-            document.getElementById("modalCompanyInput").value = docId;  // Use document ID as company value
-            document.getElementById("modalUsernameInput").value = vendor.Username;  // Fetch username from Firestore
+            document.getElementById("modalCompanyInput").value = vendor.CompanyName || docId || "";
+            document.getElementById("modalUsernameInput").value = vendor.Username || "";
             document.getElementById("modalPasswordInput").value = "";
             document.getElementById("passwordField").style.display = "block";
             document.getElementById("passwordHelpText").textContent = "Leave blank to keep the current password";
 
-            // Fetch and set the status from Firestore
-            if (vendor.status) {
-                document.getElementById("modalStatusSelect").value = vendor.Status; // Set the status value
+            if (vendor.Status) {
+                document.getElementById("modalStatusSelect").value = vendor.Status;
             }
 
-            // Update buttons and actions
+            // Load available events into dropdown
+            const eventsSnap = await getDocs(collection(db, "Events"));
+            const eventSelect = document.getElementById("modalEventSelect");
+            eventSelect.innerHTML = `<option value="">Select Event</option>`;
+            eventsSnap.forEach((eventDoc) => {
+                const eventData = eventDoc.data();
+                const option = document.createElement("option");
+                option.value = eventDoc.id;
+                option.textContent = eventData.Name || eventDoc.id;
+                if (vendor.Event === eventDoc.id) {
+                    option.selected = true;
+                }
+                eventSelect.appendChild(option);
+            });
+
+            // Set up buttons
             const saveVendorBtn = document.getElementById("saveVendorBtn");
             saveVendorBtn.textContent = "Save Changes";
             saveVendorBtn.onclick = saveVendorChanges;
@@ -304,17 +318,20 @@ window.showVendorDetails = function(docId) {
         } else {
             console.error("Vendor not found in Firestore");
         }
-    }).catch((error) => {
+    } catch (error) {
         console.error("Error getting vendor data:", error);
-    });
+    }
 };
-window.saveVendorChanges = async function() {
+
+window.saveVendorChanges = async function () {
     if (!currentVendorId) return;
 
     try {
+        const companyName = document.getElementById("modalCompanyInput").value.trim();
         const username = document.getElementById("modalUsernameInput").value.trim();
         const password = document.getElementById("modalPasswordInput").value.trim();
         const status = document.getElementById("modalStatusSelect").value;
+        const eventId = document.getElementById("modalEventSelect").value;
 
         if (!username) {
             alert("Username cannot be empty.");
@@ -322,12 +339,14 @@ window.saveVendorChanges = async function() {
         }
 
         const updateData = {
-            Username: username, 
-            Status: status
+            CompanyName: companyName,
+            Username: username,
+            Status: status,
+            Event: eventId
         };
 
         if (password) {
-            updateData.Password = password; // Only update password if provided
+            updateData.Password = password;
         }
 
         const vendorRef = doc(db, "CompanyAccounts", currentVendorId);
@@ -335,21 +354,20 @@ window.saveVendorChanges = async function() {
 
         console.log("Vendor details updated successfully.");
 
-        // Update the frontend data and re-render table
         const vendorIndex = vendorData.findIndex(v => v.id === currentVendorId);
         if (vendorIndex !== -1) {
-            vendorData[vendorIndex].company = "N/A"; // Keep company column with "N/A"
+            vendorData[vendorIndex].company = companyName;
             vendorData[vendorIndex].username = username;
             vendorData[vendorIndex].status = status;
             renderTable(vendorData);
         }
 
-        // Close the modal after update
         const modalElement = document.getElementById("vendorDetailsModal");
         const modal = bootstrap.Modal.getInstance(modalElement);
         if (modal) modal.hide();
 
         alert("Vendor details updated successfully!");
+        populateVendorTable();
 
     } catch (error) {
         console.error("Error updating vendor details:", error);

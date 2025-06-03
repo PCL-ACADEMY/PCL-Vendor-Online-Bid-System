@@ -315,18 +315,19 @@ confirmBtn.addEventListener("click", async () => {
 
             await Promise.all(updatePromises);
 
-            //  Sort display to match (highest bid first)
             const finalBidsSnapshot = await getDocs(bidsRef);
-            const finalBids = finalBidsSnapshot.docs.map(doc => ({
-                id: doc.id,
-                ...doc.data()
-            })).sort((a, b) => b.BidAmount - a.BidAmount); // Descending
-
-            // Sort display to match (Lowest bid first)
+            
+            //  Sort display to match (highest bid first)
             // const finalBids = finalBidsSnapshot.docs.map(doc => ({
             //     id: doc.id,
             //     ...doc.data()
-            // })).sort((a, b) => a.BidAmount - b.BidAmount); // Ascending
+            // })).sort((a, b) => b.BidAmount - a.BidAmount); // Descending
+
+            // Sort display to match (Lowest bid first)
+            const finalBids = finalBidsSnapshot.docs.map(doc => ({
+                id: doc.id,
+                ...doc.data()
+            })).sort((a, b) => a.BidAmount - b.BidAmount); // Ascending
 
             const userBid = finalBids.find(bid => bid.Company === companyId);
             if (userBid) {
