@@ -189,12 +189,12 @@ submitButton.addEventListener("click", () => {
 
     const incrementAmount = parseFloat(amountInput.value);
     // 
-    // if (isNaN(incrementAmount) || incrementAmount < 1000) {
+    // if (isNaN(incrementAmount) || incrementAmount < 3000) {
     //     showModal("error", "Invalid input. The increment amount must be at least 300.", () => {});
     //     return;
     // }
-    if (isNaN(incrementAmount) || incrementAmount < 1000) {
-        showModal("error", "Invalid input. The decrement amount must be at least 1000.", () => {});
+    if (isNaN(incrementAmount) || incrementAmount < 3000) {
+        showModal("error", "Invalid input. The decrement amount must be at least 3000.", () => {});
         return;
     }
 
@@ -452,7 +452,7 @@ function startCountdown(startTime, endTime) {
     function updateTimer() {
         const now = new Date();
         if (now < startTimestamp) {
-            timerDisplay.innerText = "Event has not started yet.";
+            timerDisplay.innerText = "Event has not yet started.";
             disableInputs(true);
             return;
         }
