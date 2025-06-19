@@ -36,33 +36,35 @@ async function populateEventTable() {
         }
 
         eventsSnapshot.forEach((eventDoc) => {
-            const eventData = eventDoc.data();
-            const eventName = eventData.Name || "Unnamed Event";
-            const startTime = eventData.StartTime?.toDate().toISOString().slice(0, 16) || "";
-            const endTime = eventData.EndTime?.toDate().toISOString().slice(0, 16) || "";
+        const eventData = eventDoc.data();
+        const eventName = eventData.Name || "Unnamed Event";
+        const startTime = eventData.StartTime?.toDate() || null;
+        const endTime = eventData.EndTime?.toDate() || null;
 
-            const row = document.createElement("tr");
-            row.innerHTML = `
-                <td>${eventName}</td>
-                <td style="text-align: center;">${new Date(startTime).toLocaleString()}</td>
-                <td style="text-align: center;">${new Date(endTime).toLocaleString()}</td>
-                <td style="text-align: center;">
-                    <button class="edit-event-btn" data-event-id="${eventDoc.id}" 
-                            data-event-name="${eventName}" data-start-time="${startTime}" 
-                            data-end-time="${endTime}" 
-                            style="padding: 5px 15px; border-radius: 5px; border: 1px solid #010101; 
-                                   background-color: #007bff; color: white; cursor: pointer;">
-                        <i class="fas fa-edit"></i> Edit
-                    </button>
-                </td>
-            `;
+        const row = document.createElement("tr");
+        row.innerHTML = `
+            <td>${eventName}</td>
+            <td style="text-align: center;">${startTime?.toLocaleString() || ""}</td>
+            <td style="text-align: center;">${endTime?.toLocaleString() || ""}</td>
+            <td style="text-align: center;">
+                <button class="edit-event-btn" data-event-id="${eventDoc.id}" 
+                        data-event-name="${eventName}" 
+                        data-start-time="${startTime?.toISOString() || ""}" 
+                        data-end-time="${endTime?.toISOString() || ""}" 
+                        style="padding: 5px 15px; border-radius: 5px; border: 1px solid #010101; 
+                            background-color: #007bff; color: white; cursor: pointer;">
+                    <i class="fas fa-edit"></i> Edit
+                </button>
+            </td>
+        `;
 
-            row.querySelector(".edit-event-btn").addEventListener("click", (e) => {
-                openEditModal(e.target);
-            });
-
-            tableBody.appendChild(row);
+        row.querySelector(".edit-event-btn").addEventListener("click", (e) => {
+            openEditModal(e.target);
         });
+
+        tableBody.appendChild(row);
+    });
+
 
     } catch (error) {
         console.error("Error loading events:", error);
@@ -85,42 +87,45 @@ closeModal.addEventListener("click", () => {
 
 // Save event to Firestore when "Save" button is clicked
 saveEvent.addEventListener("click", async () => {
-    const eventName = document.getElementById("eventName").value.trim();
-    const startTime = document.getElementById("startTime").value;
-    const endTime = document.getElementById("endTime").value;
+  const eventName  = document.getElementById("eventName").value.trim();
+  const startTime  = document.getElementById("startTime").value;
+  const endTime    = document.getElementById("endTime").value;
 
-    if (!eventName || !startTime || !endTime) {
-        alert("Please fill in all fields.");
-        return;
-    }
+  if (!eventName || !startTime || !endTime) {
+    alert("Please fill in all fields.");
+    return;
+  }
 
-    // Convert Event Name to a valid Firestore ID (replace spaces & special characters)
-    const eventId = eventName.replace(/\s+/g, "_").replace(/[^a-zA-Z0-9_]/g, "");
+  const eventId = eventName
+                    .replace(/\s+/g, "_")
+                    .replace(/[^a-zA-Z0-9_]/g, "");
 
-    try {
-        // Convert input times to Firestore Timestamp
-        const startTimestamp = Timestamp.fromDate(new Date(startTime));
-        const endTimestamp = Timestamp.fromDate(new Date(endTime));
+  try {
+    // Build a single reference you can reuse
+    const eventRef = doc(db, "Events", eventId);
 
-        // Set document with eventId as the document ID
-        await setDoc(doc(db, "Events", eventId), {
-            Name: eventName,
-            StartTime: startTimestamp,
-            EndTime: endTimestamp
-        });
+    // Convert to Firestore Timestamps
+    const startTimestamp = Timestamp.fromDate(new Date(startTime));
+    const endTimestamp   = Timestamp.fromDate(new Date(endTime));
 
-        const productsRef = collection(eventRef, "Products");
+    // Save the event
+    await setDoc(eventRef, {
+      Name: eventName,
+      StartTime: startTimestamp,
+      EndTime: endTimestamp
+    });
 
-        alert(`Event "${eventName}" added successfully with ID "${eventId}"`);
+    // Sub‑collection under the same event
+    const productsRef = collection(eventRef, "Products");
 
-        // Close modal & refresh event table
-        addEventModal.style.display = "none";
-        populateEventTable();
+    alert(`Event "${eventName}" added successfully with ID "${eventId}"`);
 
-    } catch (error) {
-        console.error("Error adding event:", error);
-        alert("Failed to add event.");
-    }
+    addEventModal.style.display = "none";
+    populateEventTable();
+  } catch (error) {
+    console.error("Error adding event:", error);
+    alert("Failed to add event.");
+  }
 });
 
 // Function to Open Edit Modal
