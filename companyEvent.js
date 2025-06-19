@@ -104,12 +104,12 @@ async function fetchEventData() {
 
             if (!bidsSnapshot.empty) {
                 // Increment Rank 1 = Highest Bid
-                const sortedBids = bidsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }))
-                    .sort((a, b) => b.BidAmount - a.BidAmount); // Descending order
+                // const sortedBids = bidsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }))
+                //     .sort((a, b) => b.BidAmount - a.BidAmount); // Descending order
 
                 // Decrement Rank 1 = Lowest Bid
-                // const sortedBids = bidsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }))
-                //     .sort((a, b) => a.BidAmount - b.BidAmount); // Ascending order
+                const sortedBids = bidsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }))
+                    .sort((a, b) => a.BidAmount - b.BidAmount); // Ascending order
 
                 sortedBids.forEach((bid, index) => {
                     const bidDocRef = doc(db, `Events/${eventId}/Products/${productId}/Bids`, bid.id);
@@ -188,25 +188,18 @@ submitButton.addEventListener("click", () => {
     }
 
     const incrementAmount = parseFloat(amountInput.value);
-    if (isNaN(incrementAmount) || incrementAmount < 300) {
-        showModal("error", "Invalid input. The increment amount must be at least 300.", () => {});
+    // 
+    // if (isNaN(incrementAmount) || incrementAmount < 3000) {
+    //     showModal("error", "Invalid input. The increment amount must be at least 300.", () => {});
+    //     return;
+    // }
+    if (isNaN(incrementAmount) || incrementAmount < 3000) {
+        showModal("error", "Invalid input. The decrement amount must be at least 3000.", () => {});
         return;
     }
 
-    const modalMessage = `Are you sure you want to increase your bid amount by ₱${incrementAmount.toLocaleString()}?`;
-    showModal("confirmation", modalMessage, (confirmed) => {
-        if (confirmed) {
-            pendingBidData = {
-                quantity: quantityInput.value,
-                amount: amountInput.value,
-                productId: selectedProduct.value
-            };
-            confirmBtn.click();
-        }
-        
-
-    // Decrement Logic (commented out)
-    // const modalMessage = `Are you sure you want to decrease your bid amount by ₱${incrementAmount.toLocaleString()}?`;
+    // Incement Logic
+    // const modalMessage = `Are you sure you want to increase your bid amount by ₱${incrementAmount.toLocaleString()}?`;
     // showModal("confirmation", modalMessage, (confirmed) => {
     //     if (confirmed) {
     //         pendingBidData = {
@@ -214,8 +207,21 @@ submitButton.addEventListener("click", () => {
     //             amount: amountInput.value,
     //             productId: selectedProduct.value
     //         };
-    //         confirmBtn.click(); // Manually trigger the confirmation handler
+    //         confirmBtn.click();
     //     }
+        
+
+    // Decrement Logic
+    const modalMessage = `Are you sure you want to decrease your bid amount by ₱${incrementAmount.toLocaleString()}?`;
+    showModal("confirmation", modalMessage, (confirmed) => {
+        if (confirmed) {
+            pendingBidData = {
+                quantity: quantityInput.value,
+                amount: amountInput.value,
+                productId: selectedProduct.value
+            };
+            confirmBtn.click(); // Manually trigger the confirmation handler
+        }
     });
 });
 
@@ -272,10 +278,10 @@ confirmBtn.addEventListener("click", async () => {
             const bidData = bidDoc.data();
 
             // Increment
-            const newBidAmount = (bidData.BidAmount || 0) + amountChange;
+            // const newBidAmount = (bidData.BidAmount || 0) + amountChange;
 
             // Decrement
-            // const newBidAmount = Math.max((bidData.BidAmount || 0) - amountChange, 0);
+            const newBidAmount = Math.max((bidData.BidAmount || 0) - amountChange, 0);
 
             // Check for tie 
             const allBidsSnapshot = await getDocs(bidsRef);
@@ -294,18 +300,18 @@ confirmBtn.addEventListener("click", async () => {
                 BidAmount: newBidAmount
             });
 
-            //  Ranking (rank 1 = highest bid)
             const updatedBidsSnapshot = await getDocs(bidsRef);
-            const updatedBids = updatedBidsSnapshot.docs.map(doc => ({
-                id: doc.id,
-                ...doc.data()
-            })).sort((a, b) => b.BidAmount - a.BidAmount); // Descending order
-
-            // Ranking (rank 1 = lowest bid)
+            //  Ranking (rank 1 = highest bid)
             // const updatedBids = updatedBidsSnapshot.docs.map(doc => ({
             //     id: doc.id,
             //     ...doc.data()
-            // })).sort((a, b) => a.BidAmount - b.BidAmount); // Ascending order
+            // })).sort((a, b) => b.BidAmount - a.BidAmount); // Descending order
+
+            // Ranking (rank 1 = lowest bid)
+            const updatedBids = updatedBidsSnapshot.docs.map(doc => ({
+                id: doc.id,
+                ...doc.data()
+            })).sort((a, b) => a.BidAmount - b.BidAmount); // Ascending order
 
             const updatePromises = updatedBids.map((bid, index) => {
                 const bidDocRef = doc(db, `Events/${eventId}/Products/${productId}/Bids`, bid.id);
@@ -314,18 +320,19 @@ confirmBtn.addEventListener("click", async () => {
 
             await Promise.all(updatePromises);
 
-            //  Sort display to match (highest bid first)
             const finalBidsSnapshot = await getDocs(bidsRef);
-            const finalBids = finalBidsSnapshot.docs.map(doc => ({
-                id: doc.id,
-                ...doc.data()
-            })).sort((a, b) => b.BidAmount - a.BidAmount); // Descending
 
-            // Sort display to match (Lowest bid first)
+            //  Sort display to match (highest bid first)
             // const finalBids = finalBidsSnapshot.docs.map(doc => ({
             //     id: doc.id,
             //     ...doc.data()
-            // })).sort((a, b) => a.BidAmount - b.BidAmount); // Ascending
+            // })).sort((a, b) => b.BidAmount - a.BidAmount); // Descending
+
+            // Sort display to match (Lowest bid first)
+            const finalBids = finalBidsSnapshot.docs.map(doc => ({
+                id: doc.id,
+                ...doc.data()
+            })).sort((a, b) => a.BidAmount - b.BidAmount); // Ascending
 
             const userBid = finalBids.find(bid => bid.Company === companyId);
             if (userBid) {
@@ -397,12 +404,12 @@ async function fetchLatestTableData() {
 
             if (!bidsSnapshot.empty) {
                 // Increment Rank 1 = Highest Bid
-                const sortedBids = bidsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }))
-                    .sort((a, b) => b.BidAmount - a.BidAmount); // Descending order
+                // const sortedBids = bidsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }))
+                //     .sort((a, b) => b.BidAmount - a.BidAmount); // Descending order
 
                 // Decrement Rank 1 = Lowest Bid
-                // const sortedBids = bidsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }))
-                //     .sort((a, b) => a.BidAmount - b.BidAmount); // Ascending order
+                const sortedBids = bidsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }))
+                    .sort((a, b) => a.BidAmount - b.BidAmount); // Ascending order
 
                 sortedBids.forEach((bid, index) => {
                     const bidDocRef = doc(db, `Events/${eventId}/Products/${productId}/Bids`, bid.id);
@@ -445,7 +452,7 @@ function startCountdown(startTime, endTime) {
     function updateTimer() {
         const now = new Date();
         if (now < startTimestamp) {
-            timerDisplay.innerText = "Event has not started yet.";
+            timerDisplay.innerText = "Event has not yet started.";
             disableInputs(true);
             return;
         }

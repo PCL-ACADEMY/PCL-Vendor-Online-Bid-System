@@ -340,34 +340,6 @@ document.getElementById("submitBidBtn").addEventListener("click", async () => {
     }
 });
 
-document.getElementById("submitBidBtn").addEventListener("click", async () => {
-    const companyId = document.getElementById("companySelect").value;
-    const bidAmount = parseFloat(document.getElementById("bidAmountInput").value);
-    const quantityOffered = parseInt(document.getElementById("quantityOfferedInput").value);
-
-    if (!companyId || isNaN(bidAmount) || isNaN(quantityOffered)) {
-        alert("Please fill in all fields correctly.");
-        return;
-    }
-
-    try {
-        const bidsRef = collection(db, `Events/${selectedEventId}/Products/${selectedProductIdForBid}/Bids`);
-        await addDoc(bidsRef, {
-            Company: companyId,
-            BidAmount: bidAmount,
-            QuantityOffered: quantityOffered,
-            Rank: 0 // default rank, can be calculated later
-        });
-
-        bootstrap.Modal.getInstance(document.getElementById("addBidModal")).hide();
-        alert("Bid successfully submitted!");
-    } catch (error) {
-        console.error("Error adding bid:", error);
-        alert("An error occurred while submitting the bid.");
-    }
-});
-
-
 document.addEventListener("DOMContentLoaded", () => {
 
 });

@@ -31,7 +31,7 @@
 
 </head>
 
-<body>
+<body oncontextmenu="return false" controlslist="nodownload">
   <main>
     <div style="text-align: left;">
       <div style="font-size: 48px; font-weight: bold; color: #333; font-family: 'Arial', sans-serif;">
@@ -48,7 +48,7 @@
       <div style="font-size: 18px; font-weight: normal; color: #000000; font-family: 'Arial', sans-serif; padding-bottom: 10px;">
         <div id="companyName"></div>
       </div>
-      <div id="timer" style="font-family: 'Courier New', Courier, monospace; font-size: 5rem; position: fixed; top: 20px; right: 20px;">
+      <div id="timer" style="font-family: 'Courier New', Courier, monospace; font-size: 3rem; position: fixed; top: 70px; right: 20px;">
       </div>
   </div>
   
@@ -62,8 +62,8 @@
                   <th style="width: 3%; text-align: center;">Quantity Req.</th>
                   <th style="width: 3%; text-align: center;">Quantity Offer</th>
                   <th style="width: 0%; text-align: center;">  </th>
-                  <th style="width: 5%; text-align: center;">Bid Amount</th>
-                  <th style="width: 1%; text-align: center;">Rank</th>
+                  <th style="width: 10%; text-align: center;">Bid Amount</th>
+                  <th style="width: 5%; text-align: center;">Rank</th>
               </tr>
           </thead>
           <tbody>
@@ -77,9 +77,9 @@
     <input type="text" placeholder="Quantity" style="width:100px; padding: 5px; border-radius: 5px; border: 1px solid #aaa;">
       <input type="text" placeholder="Amount" style="width:100px; padding: 5px; border-radius: 5px; border: 1px solid #aaa;">
       <!-- increment button -->
-      <button id="Increment" style="padding: 5px 20px; border-radius: 5px; border: 1px solid #aaa; background-color: #800000; color: white; cursor: pointer;">Increment</button>
-      <!-- decrement button
-      <button id="decrement" style="padding: 5px 20px; border-radius: 5px; border: 1px solid #aaa; background-color: #800000; color: white; cursor: pointer;">Decrement</button> -->
+      <!-- <button id="Increment" style="padding: 5px 20px; border-radius: 5px; border: 1px solid #aaa; background-color: #800000; color: white; cursor: pointer;">Increment</button> -->
+      <!-- decrement button -->
+      <button id="decrement" style="padding: 5px 20px; border-radius: 5px; border: 1px solid #aaa; background-color: #800000; color: white; cursor: pointer;">Decrement</button>
       <button id="update" style="padding: 5px 20px; border-radius: 5px; border: 1px solid #aaa; background-color: #800000; color: white; cursor: pointer;">Update</button>
   </div>
   
